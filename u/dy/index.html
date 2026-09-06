@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>ACHTLV · 各类链接 · 一键复制</title>
+    <link href="https://fonts.font.im/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0d47a1;
+            --primary-hover: #1976d2;
+            --surface: #ffffff;
+            --surface-variant: #f8f9fa;
+            --outline: #e0e0e0;
+            --text-primary: #111111;
+            --text-secondary: #333333;
+            --shadow-low: rgba(13, 71, 161, 0.10);
+            --shadow-med: rgba(13, 71, 161, 0.20);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, 'Roboto', system-ui, sans-serif;
+        }
+
+        body {
+            background: var(--surface);
+            color: var(--text-secondary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 32px 16px;
+        }
+
+        .container {
+            max-width: 1280px;
+            width: 100%;
+        }
+
+        /* 页头 */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+        }
+
+        .header p {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            background: rgba(13, 71, 161, 0.04);
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 40px;
+            border: 1px solid rgba(13, 71, 161, 0.12);
+        }
+
+        /* 网格卡片区 */
+        .link-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        /* 卡片 - M3 风格 */
+        .card {
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 24px 20px;
+            box-shadow: 0 1px 3px var(--shadow-low), 0 1px 2px var(--shadow-low);
+            transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid var(--outline);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 24px var(--shadow-med), 0 4px 12px var(--shadow-med);
+            border-color: var(--primary-hover);
+        }
+
+        /* 描述文字 */
+        .desc {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.5;
+            margin-bottom: 12px;
+            word-break: break-word;
+        }
+
+        .note {
+            display: inline-block;
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: #64748b;
+            background: rgba(13, 71, 161, 0.04);
+            padding: 4px 12px;
+            border-radius: 30px;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+
+        /* 链接区域 — 点击复制 */
+        .link {
+            display: block;
+            background: rgba(13, 71, 161, 0.04);
+            border-radius: 16px;
+            padding: 16px 18px;
+            margin-top: 12px;
+            border: 1px solid var(--outline);
+            color: var(--primary);
+            font-size: 1rem;
+            font-weight: 500;
+            word-break: break-all;
+            line-height: 1.5;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .link:hover {
+            background: rgba(13, 71, 161, 0.08);
+            border-color: var(--primary-hover);
+            box-shadow: 0 4px 12px rgba(13, 71, 161, 0.15);
+            color: var(--primary-hover);
+        }
+
+        .link:active {
+            transform: scale(0.99);
+        }
+
+        .link::after {
+            content: "📋 复制";
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: #64748b;
+            margin-left: 10px;
+            background: rgba(0,0,0,0.03);
+            padding: 3px 10px;
+            border-radius: 40px;
+            border: 1px solid #d1d9e6;
+            display: inline-block;
+            vertical-align: middle;
+            transition: all 0.15s;
+        }
+
+        .link:hover::after {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            content: "📋 点击复制";
+        }
+
+        /* toast 提示 - M3 风格 */
+        .toast {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.9);
+            background: #1e2b3c;
+            color: white;
+            padding: 14px 32px;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 500;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.25s, transform 0.25s;
+            pointer-events: none;
+            white-space: nowrap;
+            max-width: 90%;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+        }
+
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.95rem;
+            border-top: 1px solid var(--outline);
+            padding-top: 32px;
+            margin-top: 24px;
+        }
+
+        /* 移动端调整（字体不缩小，只布局微调） */
+        @media (max-width: 640px) {
+            body {
+                padding: 24px 12px;
+            }
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            .link-grid {
+                gap: 16px;
+            }
+            .card {
+                padding: 20px 16px;
+                border-radius: 16px;
+            }
+            .desc {
+                font-size: 1.05rem;
+            }
+            .link {
+                padding: 14px 16px;
+                font-size: 0.98rem;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .link-grid {
+                grid-template-columns: 1fr;
+            }
+            .link::after {
+                display: block;
+                margin-left: 0;
+                margin-top: 8px;
+                width: fit-content;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 链接导航</h1>
+            <p>点击下方蓝色区域即可复制</p>
+        </div>
+
+        <div id="linkGrid" class="link-grid"></div>
+
+        <div class="footer">
+            ⚡ 点击链接区域复制地址 · 长按/右键同样生效<br>
+            <span style="opacity:0.7;">持续更新中</span>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        (function() {
+            const items = [
+                { desc: "免费机场Clash订阅链接", url: "https://my5353.com/free", note: "" },
+                { desc: "GKD规则", url: "https://my5353.com/gkddy", note: "" },
+                { desc: "李跳跳规则", url: "https://my5353.com/lttgz", note: "无法直接导入，需要先进入网站后复制规则再导入" },
+                { desc: "开源阅读3.0站长精选普通书源", url: "https://my5353.com/jxy", note: "" },
+                { desc: "开源阅读3.0站长精选特殊书源", url: "https://my5353.com/tsy", note: "" },
+                { desc: "开源阅读3.0站长自制TXT目录规则", url: "https://my5353.com/mlgz", note: "" },
+                { desc: "开源阅读3.0站长精选替换规则", url: "https://my5353.com/thgz", note: "" },
+                { desc: "开源阅读3.0站长制作阅读界面舒适褐", url: "https://my5353.com/ssh", note: "" },
+                { desc: "开源阅读3.0站长制作阅读界面朴实白", url: "https://my5353.com/psb", note: "" },
+                { desc: "开源阅读3.0站长制作阅读界面护眼绿", url: "https://my5353.com/hyl", note: "" },
+                { desc: "开源阅读3.0站长制作阅读界面水墨画", url: "https://my5353.com/smh", note: "" },
+                { desc: "开源阅读3.0站长制作阅读界面纸质黄", url: "https://my5353.com/zzh", note: "" },
+                { desc: "开源阅读3.0站长精选TTS源", url: "https://my5353.com/tts", note: "" },
+                { desc: "开源阅读3.0书荒广场订阅源", url: "https://my5353.com/shgc", note: "" },
+                { desc: "开源阅读3.0奈奈Cosplay书源", url: "https://my5353.com/cosy", note: "" },
+                { desc: "异次元漫画站长甄选图源", url: "https://my5353.com/zxty", note: "" }
+            ];
+
+            const grid = document.getElementById('linkGrid');
+            const toastEl = document.getElementById('toast');
+
+            function showToast(msg, duration = 2200) {
+                toastEl.textContent = msg;
+                toastEl.classList.add('show');
+                clearTimeout(window.toastTimer);
+                window.toastTimer = setTimeout(() => toastEl.classList.remove('show'), duration);
+            }
+
+            async function copyToClipboard(text) {
+                try {
+                    await navigator.clipboard.writeText(text);
+                    showToast('✅ 复制成功');
+                } catch (err) {
+                    console.warn('Clipboard API 失败', err);
+                    fallbackCopy(text);
+                }
+            }
+
+            function fallbackCopy(text) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                textarea.setSelectionRange(0, 99999);
+                const successful = document.execCommand('copy');
+                document.body.removeChild(textarea);
+                if (successful) {
+                    showToast('✅ 复制成功');
+                } else {
+                    prompt('无法自动复制，请手动复制 (Ctrl+C)', text);
+                    showToast('请手动复制链接', 3000);
+                }
+            }
+
+            function renderCards() {
+                let html = '';
+                items.forEach(item => {
+                    const noteHtml = item.note ? `<span class="note">${item.note}</span>` : '';
+                    html += `
+                        <div class="card">
+                            <div class="desc">
+                                ${item.desc}
+                                ${noteHtml}
+                            </div>
+                            <div class="link" data-url="${item.url}">${item.url}</div>
+                        </div>
+                    `;
+                });
+                grid.innerHTML = html;
+            }
+
+            function bindEvents() {
+                grid.addEventListener('click', e => {
+                    const linkEl = e.target.closest('.link');
+                    if (linkEl) {
+                        e.preventDefault();
+                        const url = linkEl.dataset.url;
+                        if (url) copyToClipboard(url);
+                    }
+                });
+            }
+
+            renderCards();
+            bindEvents();
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斗地主 · 真人联机版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { font-family: 'Noto Sans SC', system-ui, sans-serif; }
+        .card { width: 52px; height: 72px; background: white; border: 2px solid #334155; border-radius: 8px; box-shadow: 3px 4px 8px rgba(0,0,0,0.3); display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 700; transition: all 0.2s; }
+        .card.selected { border-color: #eab308; box-shadow: 0 0 0 4px rgba(234,179,8,0.5); transform: translateY(-6px) scale(1.05); }
+        .poker-table { background: radial-gradient(circle at center, #166534 0%, #14532d 70%); }
+        @media (max-width: 640px) {
+            .card { width: 44px !important; height: 62px !important; }
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 text-white">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex items-center justify-between py-6">
+            <div class="flex items-center gap-x-3">
+                <div class="w-11 h-11 bg-yellow-500 rounded-2xl flex items-center justify-center">
+                    <i class="fa-solid fa-chess-king text-zinc-900 text-3xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-4xl font-bold">斗地主</h1>
+                    <p class="text-emerald-400 text-sm -mt-1">真人三人联机版</p>
+                </div>
+            </div>
+            <div id="room-info" class="hidden items-center gap-x-3 bg-zinc-900 px-4 py-2 rounded-2xl border border-zinc-800">
+                <div class="text-xs text-zinc-400">房间号</div>
+                <div id="room-code" class="font-mono text-2xl font-bold text-yellow-400 tracking-[3px]"></div>
+            </div>
+        </div>
+
+        <div id="lobby-screen">
+            <div class="max-w-md mx-auto bg-zinc-900 border border-zinc-800 rounded-3xl p-8">
+                <h2 class="text-2xl font-bold mb-6 text-center">加入或创建房间</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm text-zinc-400 mb-1.5">你的昵称</label>
+                        <input id="nickname" type="text" value="玩家1" class="w-full bg-zinc-950 border border-zinc-700 focus:border-emerald-500 rounded-2xl px-4 py-3 text-lg outline-none">
+                    </div>
+                    <button onclick="createRoom()" class="w-full bg-emerald-600 hover:bg-emerald-500 transition py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-x-2">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>创建新房间</span>
+                    </button>
+                    <div class="flex items-center gap-x-3">
+                        <div class="flex-1 h-px bg-zinc-700"></div>
+                        <span class="text-xs text-zinc-500">或</span>
+                        <div class="flex-1 h-px bg-zinc-700"></div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <input id="join-code" type="text" placeholder="输入房间号" class="flex-1 bg-zinc-950 border border-zinc-700 focus:border-emerald-500 rounded-2xl px-4 py-3 text-lg font-mono uppercase outline-none">
+                        <button onclick="joinRoom()" class="w-full sm:w-auto bg-zinc-700 hover:bg-zinc-600 transition px-8 py-3 rounded-2xl font-bold">加入</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="game-screen" class="hidden">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-x-3">
+                    <div class="px-4 py-1.5 bg-zinc-900 rounded-2xl text-sm border border-zinc-800">
+                        <span id="joined-count">0/3</span> 人
+                    </div>
+                    <div class="px-4 py-1.5 bg-zinc-900 rounded-2xl text-sm border border-zinc-800">
+                        <span id="status-text">等待中...</span>
+                    </div>
+                </div>
+                <button onclick="leaveRoom()" class="px-4 py-2 text-sm bg-red-900/70 hover:bg-red-900 rounded-2xl">退出房间</button>
+            </div>
+
+            <div class="grid grid-cols-12 gap-4">
+                <div class="col-span-3">
+                    <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-4">
+                        <div class="flex justify-between mb-1">
+                            <div id="left-name" class="font-bold">等待中...</div>
+                            <div id="left-role" class="text-xs text-emerald-400">农民</div>
+                        </div>
+                        <div class="text-center mb-2">
+                            <div id="left-count" class="font-mono text-3xl font-bold">0</div>
+                            <div class="text-xs text-zinc-400 -mt-1">张牌</div>
+                        </div>
+                        <div id="left-cards" class="min-h-[70px] flex items-center justify-center bg-zinc-950 rounded-2xl border border-zinc-800"></div>
+                    </div>
+                </div>
+
+                <div class="col-span-6">
+                    <div class="poker-table rounded-3xl border border-emerald-900/50 p-5">
+                        <div id="table-area" class="min-h-[110px] flex items-center justify-center bg-emerald-950/30 rounded-2xl border border-emerald-900/40 p-4"></div>
+                        
+                        <div id="controls" class="hidden mt-4">
+                            <div class="flex flex-col sm:flex-row justify-center gap-3">
+                                <button onclick="passTurn()" class="flex-1 px-8 py-3.5 bg-zinc-700 hover:bg-zinc-600 rounded-2xl font-semibold">不要</button>
+                                <button onclick="playSelected()" class="flex-1 px-8 py-3.5 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-bold">出牌</button>
+                            </div>
+                            <div id="message" class="mt-3 text-center text-sm text-emerald-300"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-span-3">
+                    <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-4">
+                        <div class="flex justify-between mb-1">
+                            <div id="right-name" class="font-bold">等待中...</div>
+                            <div id="right-role" class="text-xs text-emerald-400">农民</div>
+                        </div>
+                        <div class="text-center mb-2">
+                            <div id="right-count" class="font-mono text-3xl font-bold">0</div>
+                            <div class="text-xs text-zinc-400 -mt-1">张牌</div>
+                        </div>
+                        <div id="right-cards" class="min-h-[70px] flex items-center justify-center bg-zinc-950 rounded-2xl border border-zinc-800"></div>
+                    </div>
+                </div>
+
+                <div class="col-span-12 mt-2">
+                    <div class="bg-zinc-900 border border-emerald-700 rounded-3xl p-5">
+                        <div class="flex justify-between mb-3">
+                            <div class="flex items-center gap-x-3">
+                                <div class="w-10 h-10 bg-emerald-600 rounded-2xl flex items-center justify-center">
+                                    <i class="fa-solid fa-user text-white"></i>
+                                </div>
+                                <div>
+                                    <span id="bottom-name" class="font-bold text-2xl">你</span>
+                                    <span id="bottom-role" class="ml-2 text-xs px-2.5 py-0.5 bg-emerald-950 text-emerald-400 rounded-xl">农民</span>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs text-emerald-400">手牌</div>
+                                <div id="bottom-count" class="font-mono text-4xl font-bold">0</div>
+                                <div class="text-xs text-zinc-400 -mt-1">张牌</div>
+                            </div>
+                        </div>
+                        <div id="human-cards" class="flex gap-1.5 overflow-x-auto pb-3 min-h-[90px] bg-zinc-950 rounded-2xl border border-emerald-900/60 p-4 snap-x"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const WORKER_URL = 'https://ddz.achtlv.ccwu.cc';
+
+        let currentRoomId = null;
+        let currentPlayerId = null;
+        let currentState = null;
+        let selectedCards = [];
+        let pollInterval = null;
+
+        async function api(path, method = 'GET', body = null) {
+            const opts = { method, headers: { 'Content-Type': 'application/json' } };
+            if (body) opts.body = JSON.stringify(body);
+            const res = await fetch(WORKER_URL + path, opts);
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || '请求失败');
+            return data;
+        }
+
+        async function createRoom() {
+            const nickname = document.getElementById('nickname').value.trim() || '玩家';
+            try {
+                const res = await api('/create', 'POST', { nickname });
+                currentRoomId = res.roomId;
+                currentPlayerId = res.playerId;
+                currentState = res.state;
+                showGameScreen();
+                startPolling();
+            } catch (e) { alert(e.message); }
+        }
+
+        async function joinRoom() {
+            const code = document.getElementById('join-code').value.trim().toUpperCase();
+            const nickname = document.getElementById('nickname').value.trim() || '玩家';
+            if (!code) return alert('请输入房间号');
+            try {
+                const res = await api('/join', 'POST', { roomId: code, nickname });
+                currentRoomId = res.roomId;
+                currentPlayerId = res.playerId;
+                currentState = res.state;
+                showGameScreen();
+                startPolling();
+            } catch (e) { alert(e.message); }
+        }
+
+        function showGameScreen() {
+            document.getElementById('lobby-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            document.getElementById('room-info').classList.remove('hidden');
+            document.getElementById('room-code').textContent = currentRoomId;
+        }
+
+        function leaveRoom() {
+            if (pollInterval) clearInterval(pollInterval);
+            currentRoomId = null;
+            currentPlayerId = null;
+            currentState = null;
+            selectedCards = [];
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('lobby-screen').classList.remove('hidden');
+            document.getElementById('room-info').classList.add('hidden');
+        }
+
+        function updateUI() {
+            if (!currentState) return;
+
+            const count = Object.keys(currentState.players).length;
+            document.getElementById('joined-count').textContent = `${count}/3`;
+
+            let statusText = '等待中...';
+            if (currentState.status === 'bidding') statusText = '叫地主阶段';
+            if (currentState.status === 'playing') statusText = '游戏进行中';
+            if (currentState.status === 'ended') statusText = '游戏结束';
+            document.getElementById('status-text').textContent = statusText;
+
+            const order = currentState.playerOrder || Object.keys(currentState.players);
+            const others = order.filter(pid => pid !== currentPlayerId);
+
+            if (others[0]) {
+                const p = currentState.players[others[0]];
+                document.getElementById('left-name').textContent = p.name;
+                document.getElementById('left-role').textContent = p.role || '农民';
+                document.getElementById('left-count').textContent = p.cardCount || 0;
+            }
+
+            if (others[1]) {
+                const p = currentState.players[others[1]];
+                document.getElementById('right-name').textContent = p.name;
+                document.getElementById('right-role').textContent = p.role || '农民';
+                document.getElementById('right-count').textContent = p.cardCount || 0;
+            }
+
+            const you = currentState.players[currentPlayerId];
+            if (you) {
+                document.getElementById('bottom-name').textContent = you.name || '你';
+                document.getElementById('bottom-role').textContent = you.role || '农民';
+                document.getElementById('bottom-count').textContent = you.cardCount || (you.hand ? you.hand.length : 0);
+                renderYourHand(you.hand || []);
+            }
+
+            renderTable();
+
+            const controls = document.getElementById('controls');
+            const isMyTurn = currentState.currentPlayer === currentPlayerId && currentState.status === 'playing';
+            controls.classList.toggle('hidden', !isMyTurn);
+
+            if (currentState.status === 'ended' && currentState.winMessage) {
+                document.getElementById('message').textContent = currentState.winMessage;
+            }
+        }
+
+        function renderYourHand(hand) {
+            const container = document.getElementById('human-cards');
+            container.innerHTML = '';
+            if (!hand || hand.length === 0) return;
+
+            hand.sort((a, b) => b.value - a.value);
+
+            hand.forEach(card => {
+                const el = createCardElement(card, true);
+                if (selectedCards.some(c => c.id === card.id)) {
+                    el.classList.add('selected');
+                }
+                el.onclick = () => toggleCard(card, el);
+                container.appendChild(el);
+            });
+        }
+
+        function createCardElement(card, clickable = false) {
+            const el = document.createElement('div');
+            el.className = `card flex-shrink-0 ${clickable ? 'cursor-pointer' : ''}`;
+            if (card.rank === '小王' || card.rank === '大王') {
+                el.innerHTML = `<div class="text-center"><div class="text-xs">${card.rank}</div><div class="text-3xl">${card.suit}</div></div>`;
+            } else {
+                el.style.color = card.color === 'red' ? '#b91c1c' : '#1e2937';
+                el.innerHTML = `<div class="text-center"><div class="text-lg font-bold">${card.rank}</div><div class="text-xl -mt-1">${card.suit}</div></div>`;
+            }
+            return el;
+        }
+
+        function toggleCard(card, el) {
+            const idx = selectedCards.findIndex(c => c.id === card.id);
+            if (idx > -1) {
+                selectedCards.splice(idx, 1);
+                el.classList.remove('selected');
+            } else {
+                selectedCards.push(card);
+                el.classList.add('selected');
+            }
+        }
+
+        function renderTable() {
+            const container = document.getElementById('table-area');
+            container.innerHTML = '';
+            if (!currentState || !currentState.lastPlay) {
+                container.innerHTML = `<div class="text-emerald-300/60 text-center py-4">等待出牌...</div>`;
+                return;
+            }
+            const lp = currentState.lastPlay;
+            const label = document.createElement('div');
+            label.className = 'text-xs text-center mb-2 text-emerald-400';
+            label.textContent = `${lp.playerName} 出牌`;
+            container.appendChild(label);
+
+            const row = document.createElement('div');
+            row.className = 'flex justify-center gap-1 flex-wrap';
+            lp.cards.forEach(card => row.appendChild(createCardElement(card)));
+            container.appendChild(row);
+        }
+
+        async function playSelected() {
+            if (selectedCards.length === 0) return alert('请选择要出的牌');
+            const cardIds = selectedCards.map(c => c.id);
+            try {
+                const res = await api('/play', 'POST', { roomId: currentRoomId, playerId: currentPlayerId, cardIds });
+                currentState = res.state;
+                selectedCards = [];
+                updateUI();
+            } catch (e) { alert(e.message); }
+        }
+
+        async function passTurn() {
+            try {
+                const res = await api('/pass', 'POST', { roomId: currentRoomId, playerId: currentPlayerId });
+                currentState = res.state;
+                selectedCards = [];
+                updateUI();
+            } catch (e) { alert(e.message); }
+        }
+
+        function startPolling() {
+            if (pollInterval) clearInterval(pollInterval);
+            pollInterval = setInterval(async () => {
+                if (!currentRoomId || !currentPlayerId) return;
+                try {
+                    const state = await api(`/state?roomId=${currentRoomId}&playerId=${currentPlayerId}`);
+                    currentState = state;
+                    updateUI();
+
+                    if (state.status === 'ended' && state.winMessage) {
+                        clearInterval(pollInterval);
+                        setTimeout(() => {
+                            if (confirm(state.winMessage + '\n\n是否再来一局？')) {
+                                replayGame();
+                            } else {
+                                leaveRoom();
+                            }
+                        }, 800);
+                    }
+                } catch (e) {}
+            }, 1400);
+        }
+
+        async function replayGame() {
+            try {
+                const res = await api('/replay', 'POST', { roomId: currentRoomId, playerId: currentPlayerId });
+                if (res.newRound) {
+                    currentState = res.state;
+                    updateUI();
+                    startPolling();
+                } else {
+                    alert('等待其他玩家同意再来一局...');
+                }
+            } catch (e) {
+                alert(e.message);
+            }
+        }
+
+        window.onload = () => {
+            console.log('%c[斗地主] KV完整版已加载', 'color:#166534');
+        };
+    </script>
+</body>
+</html>

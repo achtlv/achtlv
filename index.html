@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="toAPbrj3V5QsZYBrPL8XmdCNMkl0tq5UnWP_uo9_Tjo" />
+    <link rel="canonical" href="https://ach.cc.cd/" />
+    <title>ACH资源导航</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="preconnect" href="https://fonts.font.im">
+    <link rel="preconnect" href="https://fonts.font.im" crossorigin>
+    <link href="https://fonts.font.im/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "ACH资源导航",
+      "url": "https://ach.cc.cd/",
+      "alternateName": ["ACH资源导航"],
+      "description": "ACH资源导航，提供各种实用网页。",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://ach.cc.cd/?s={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    <style>
+        /* ========== Material You 3 (Material 3) — seed #1E40AF, TONAL_SPOT ========== */
+        /* 全局重置 & 字体 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+        }
+
+        html {
+            color-scheme: light dark;
+            /* 预留滚动条空间，避免展开内容后滚动条出现导致页面被挤窄 */
+            scrollbar-gutter: stable;
+        }
+
+        /* ----- M3 设计令牌 (由 @material/material-color-utilities 从 #1E40AF 精确生成) ----- */
+        :root {
+            --md-sys-color-primary: #3755c3;
+            --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-primary-container: #dde1ff;
+            --md-sys-color-on-primary-container: #001453;
+            --md-sys-color-secondary: #5a5d72;
+            --md-sys-color-on-secondary: #ffffff;
+            --md-sys-color-secondary-container: #dee1f9;
+            --md-sys-color-on-secondary-container: #171b2c;
+            --md-sys-color-tertiary: #75546f;
+            --md-sys-color-on-tertiary: #ffffff;
+            --md-sys-color-tertiary-container: #ffd7f4;
+            --md-sys-color-on-tertiary-container: #2c1229;
+            --md-sys-color-error: #ba1a1a;
+            --md-sys-color-on-error: #ffffff;
+            --md-sys-color-error-container: #ffdad6;
+            --md-sys-color-on-error-container: #410002;
+            --md-sys-color-background: #fefbff;
+            --md-sys-color-on-background: #1b1b1f;
+            --md-sys-color-surface: #fefbff;
+            --md-sys-color-on-surface: #1b1b1f;
+            --md-sys-color-surface-variant: #e2e1ec;
+            --md-sys-color-on-surface-variant: #45464f;
+            --md-sys-color-outline: #767680;
+            --md-sys-color-outline-variant: #c6c5d0;
+            --md-sys-color-inverse-surface: #303034;
+            --md-sys-color-inverse-on-surface: #f2f0f4;
+            --md-sys-color-inverse-primary: #b8c4ff;
+            --md-sys-color-surface-container-lowest: #ffffff;
+            --md-sys-color-surface-container-low: #f5f3f7;
+            --md-sys-color-surface-container: #f0edf1;
+            --md-sys-color-surface-container-high: #eae7ec;
+            --md-sys-color-surface-container-highest: #e4e1e6;
+            --md-sys-color-surface-tint: #3755c3;
+
+            --md-sys-shape-corner-small: 8px;
+            --md-sys-shape-corner-medium: 12px;
+            --md-sys-shape-corner-large: 16px;
+            --md-sys-shape-corner-extra-large: 28px;
+            --md-sys-shape-corner-full: 999px;
+
+            --md-sys-elevation-level1: 0 1px 3px 1px rgba(0, 0, 0, 0.15), 0 1px 2px 0 rgba(0, 0, 0, 0.30);
+            --md-sys-elevation-level2: 0 2px 6px 2px rgba(0, 0, 0, 0.15), 0 1px 2px 0 rgba(0, 0, 0, 0.30);
+        }
+
+        /* ===== 固定布局核心：flex列，头尾固定，中间可伸缩 ===== */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;          /* 至少撑满视口高度 */
+            background: var(--md-sys-color-background);
+            color: var(--md-sys-color-on-background);
+            padding: 32px 16px;          /* 优化边距，更紧凑 */
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            flex: 1;                      /* 占用body除去padding后的所有剩余高度 */
+        }
+
+        /* 头部：不伸缩，保持在顶部 */
+        header {
+            flex-shrink: 0;
+            margin-bottom: 24px;           /* 与下方分类的间距 */
+            animation: fadeIn 1s ease;
+        }
+
+        /* 头部：居中对称布局 — 时钟/日期/搜索/折叠按钮垂直排列 */
+        .header-top {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .header-left {
+            flex: 0 0 auto;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 6px;
+            color: var(--md-sys-color-primary);
+            font-weight: 400;              /* M3 display 字重 */
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            font-variant-numeric: tabular-nums;  /* 时钟数字等宽对齐，不跳动 */
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            max-width: 600px;
+            line-height: 1.5;
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        .header-right {
+            flex: 0 0 auto;
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* 搜索区 - M3 filled search bar (surface-container-high, 全圆角) */
+        .search-container {
+            width: 100%;
+        }
+
+        .search-wrapper {
+            display: flex;
+            align-items: center;
+            background: var(--md-sys-color-surface-container-high);
+            border-radius: var(--md-sys-shape-corner-full);
+            padding: 4px 10px 4px 16px;    /* 左侧留出图标空间 */
+            box-shadow: var(--md-sys-elevation-level1);
+            transition: box-shadow 0.2s ease, background 0.2s ease;
+            border: 1px solid var(--md-sys-color-outline-variant);
+        }
+
+        .search-wrapper::before {
+            content: "";
+            flex: 0 0 auto;
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' viewBox='0 0 24 24' width='24'%3E%3Cpath d='M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z' fill='%2345464f'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.7;
+        }
+
+        .search-wrapper:focus-within {
+            box-shadow: var(--md-sys-elevation-level2);
+            border-color: var(--md-sys-color-primary);
+        }
+
+        .search-wrapper select,
+        .search-wrapper input {
+            border: none;
+            background: transparent;
+            padding: 12px 10px;
+            font-size: 1rem;
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .search-wrapper select {
+            border-right: 1px solid var(--md-sys-color-outline-variant);
+            margin-right: 10px;
+            appearance: none;
+            min-width: 110px;
+            color: var(--md-sys-color-primary);
+            font-weight: 500;
+        }
+
+        .search-wrapper input {
+            flex: 1;
+        }
+
+        .search-wrapper select:focus,
+        .search-wrapper input:focus {
+            outline: none;
+        }
+
+        input[type="search"]::-webkit-search-decoration,
+        input[type="search"]::-webkit-search-cancel-button,
+        input[type="search"]::-webkit-search-results-button,
+        input[type="search"]::-webkit-search-results-decoration {
+            display: none;
+        }
+
+        input::-ms-clear,
+        input::-ms-reveal {
+            display: none;
+            width: 0;
+            height: 0;
+        }
+
+        input[type="search"] {
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        /* ----- 折叠图标 — M3 icon button (圆形 state layer, 居中悬浮) ----- */
+        .fold-toggle {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            width: 48px;
+            height: 48px;
+            margin: 4px auto 0;            /* 居中 */
+            border-radius: var(--md-sys-shape-corner-full);
+            color: var(--md-sys-color-primary);
+            transition: transform 0.15s, background 0.15s, box-shadow 0.2s;
+            user-select: none;
+            border: none;
+            background: transparent;
+            padding: 4px;
+        }
+
+        .fold-toggle:hover {
+            background: var(--md-sys-color-primary-container);
+            transform: scale(1.08);
+            box-shadow: var(--md-sys-elevation-level1);
+        }
+
+        .fold-toggle:active {
+            transform: scale(0.95);
+        }
+
+        .fold-toggle .toggle-icon {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        /* 向下箭头 (M3 light primary) */
+        .icon-arrow-down {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='40' viewBox='0 0 24 24' width='40'%3E%3Cpath d='M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z' fill='%233755c3'/%3E%3C/svg%3E");
+        }
+
+        /* 向上箭头 */
+        .icon-arrow-up {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='40' viewBox='0 0 24 24' width='40'%3E%3Cpath d='M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6 1.41-1.41z' fill='%233755c3'/%3E%3C/svg%3E");
+        }
+
+        /* ===== 分类容器：CSS Columns 瀑布流 — 短卡片自动填充空隙 ===== */
+        .categories {
+            flex: 1;                       /* 自动撑满header与footer之间的高度 */
+            overflow-y: auto;               /* 内容过多时内部滚动，不影响头尾 */
+            column-count: 3;               /* 桌面端 3 列瀑布流 */
+            column-gap: 24px;              /* 列间距 */
+            margin-top: 12px;              /* 与折叠按钮的间距 */
+            padding: 4px 4px 24px;         /* 防止卡片阴影/悬停被裁切 */
+            /* 注意：不再使用display:none控制显隐，改用内部.category的内联样式 */
+        }
+
+        /* 单个分类卡片 — M3 elevated card (surface-container-low, 28px 圆角) */
+        .category {
+            background: var(--md-sys-color-surface-container-low);
+            border-radius: var(--md-sys-shape-corner-extra-large);
+            overflow: hidden;
+            box-shadow: var(--md-sys-elevation-level1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: fit-content;            /* 高度自适应内容 */
+            border: 1px solid transparent;  /* hover 时显现轮廓 */
+            break-inside: avoid;           /* 瀑布流：卡片不被跨列截断 */
+            margin-bottom: 24px;            /* 卡片垂直间距（columns 下用 margin 而非 gap） */
+        }
+
+        .category:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--md-sys-elevation-level2);
+            border-color: var(--md-sys-color-outline-variant);
+        }
+
+        .category-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--md-sys-color-outline-variant);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .category-header h2 {
+            font-size: 1.5rem;
+            font-weight: 500;              /* M3 title 字重 */
+            color: var(--md-sys-color-primary);
+            margin: 0;
+        }
+
+        .category-description {
+            padding: 12px 24px;
+            font-size: 0.9rem;
+            color: var(--md-sys-color-on-surface-variant);
+            line-height: 1.5;
+            background: var(--md-sys-color-surface-container-high);
+            border-bottom: 1px solid var(--md-sys-color-outline-variant);
+        }
+
+        .category-content {
+            padding: 16px 20px;
+        }
+
+        /* 链接项 — M3 list item (hover 用 secondary-container tonal 态) */
+        .link-item {
+            padding: 12px 16px;
+            border-radius: var(--md-sys-shape-corner-medium);
+            margin-bottom: 8px;
+            background: var(--md-sys-color-surface-container-high);
+            transition: all 0.2s ease;
+            user-select: none;
+            border: 1px solid transparent;
+        }
+
+        .link-item:hover {
+            background: var(--md-sys-color-secondary-container);
+            transform: translateX(4px);
+            border-color: var(--md-sys-color-outline-variant);
+            box-shadow: var(--md-sys-elevation-level1);
+        }
+
+        .link-text h3 {
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+            color: var(--md-sys-color-on-surface);
+            font-weight: 500;
+        }
+
+        .link-text p {
+            font-size: 0.85rem;
+            color: var(--md-sys-color-on-surface-variant);
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        /* 底部：永不伸缩，永远在底部（由flex撑开） */
+        .footer {
+            flex-shrink: 0;
+            text-align: center;
+            margin-top: 32px;               /* 与分类区域的间距 */
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 0.9rem;
+            padding: 16px 20px;
+            border-top: 1px solid var(--md-sys-color-outline-variant);
+            opacity: 0.75;                  /* 弱化页脚视觉重量 */
+        }
+
+        /* 入场动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .category {
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .category:nth-child(1) { animation-delay: 0.1s; }
+        .category:nth-child(2) { animation-delay: 0.2s; }
+        .category:nth-child(3) { animation-delay: 0.3s; }
+        .category:nth-child(4) { animation-delay: 0.4s; }
+        .category:nth-child(5) { animation-delay: 0.5s; }
+        .category:nth-child(6) { animation-delay: 0.6s; }
+        .category:nth-child(7) { animation-delay: 0.7s; }
+        .category:nth-child(8) { animation-delay: 0.8s; }
+        .category:nth-child(9) { animation-delay: 0.9s; }
+        .category:nth-child(10) { animation-delay: 1.0s; }
+
+        /* 移动端优化 */
+        @media (max-width: 768px) {
+            body { padding: 16px 12px; }      /* 小屏减小边距 */
+            h1 { font-size: 2.5rem; }
+            .subtitle { font-size: 0.9rem; }
+            .categories { column-count: 1; }   /* 移动端单列 */
+            .category-header h2 { font-size: 1.3rem; }
+            .category-description { font-size: 0.85rem; }
+
+            .header-top {
+                gap: 12px;
+                margin-bottom: 12px;
+            }
+
+            .header-right {
+                max-width: 100%;
+            }
+
+            .search-wrapper {
+                flex-direction: column;
+                border-radius: var(--md-sys-shape-corner-large);
+                padding: 8px;
+            }
+
+            .search-wrapper::before {
+                display: none;               /* 移动端隐藏图标，节省空间 */
+            }
+
+            .search-wrapper select {
+                border-right: none;
+                border-bottom: 1px solid var(--md-sys-color-outline-variant);
+                margin-right: 0;
+                margin-bottom: 8px;
+                width: 100%;
+                text-align: center;
+            }
+
+            .search-wrapper input {
+                width: 100%;
+                text-align: center;
+            }
+
+            .fold-toggle {
+                justify-content: center;
+            }
+
+            .fold-toggle .toggle-icon {
+                width: 36px;
+                height: 36px;
+            }
+        }
+
+        /* 中等屏幕优化 */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .header-right {
+                max-width: 560px;
+            }
+
+            .categories {
+                column-count: 2;             /* 平板 2 列瀑布流 */
+            }
+        }
+
+        /* 宽屏：3 列；超宽屏 4 列 */
+        @media (min-width: 1600px) {
+            .categories {
+                column-count: 4;
+            }
+        }
+
+        /* ========== 夜间模式 — M3 dark tokens ========== */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --md-sys-color-primary: #b8c4ff;
+                --md-sys-color-on-primary: #002584;
+                --md-sys-color-primary-container: #173bab;
+                --md-sys-color-on-primary-container: #dde1ff;
+                --md-sys-color-secondary: #c2c5dd;
+                --md-sys-color-on-secondary: #2c2f42;
+                --md-sys-color-secondary-container: #424659;
+                --md-sys-color-on-secondary-container: #dee1f9;
+                --md-sys-color-tertiary: #e4bad9;
+                --md-sys-color-on-tertiary: #43273f;
+                --md-sys-color-tertiary-container: #5c3d56;
+                --md-sys-color-on-tertiary-container: #ffd7f4;
+                --md-sys-color-error: #ffb4ab;
+                --md-sys-color-on-error: #690005;
+                --md-sys-color-error-container: #93000a;
+                --md-sys-color-on-error-container: #ffb4ab;
+                --md-sys-color-background: #1b1b1f;
+                --md-sys-color-on-background: #e4e1e6;
+                --md-sys-color-surface: #1b1b1f;
+                --md-sys-color-on-surface: #e4e1e6;
+                --md-sys-color-surface-variant: #45464f;
+                --md-sys-color-on-surface-variant: #c6c5d0;
+                --md-sys-color-outline: #90909a;
+                --md-sys-color-outline-variant: #45464f;
+                --md-sys-color-inverse-surface: #e4e1e6;
+                --md-sys-color-inverse-on-surface: #303034;
+                --md-sys-color-inverse-primary: #3755c3;
+                --md-sys-color-surface-container-lowest: #0e0e11;
+                --md-sys-color-surface-container-low: #1b1b1f;
+                --md-sys-color-surface-container: #1f1f23;
+                --md-sys-color-surface-container-high: #2a2a2d;
+                --md-sys-color-surface-container-highest: #343438;
+                --md-sys-color-surface-tint: #b8c4ff;
+            }
+
+            .fold-toggle:hover {
+                background: var(--md-sys-color-primary-container);
+            }
+
+            /* 折叠图标深色版 (fill 改为 M3 dark primary) */
+            .fold-toggle .toggle-icon.icon-arrow-down {
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='40' viewBox='0 0 24 24' width='40'%3E%3Cpath d='M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z' fill='%23b8c4ff'/%3E%3C/svg%3E");
+            }
+
+            .fold-toggle .toggle-icon.icon-arrow-up {
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='40' viewBox='0 0 24 24' width='40'%3E%3Cpath d='M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6 1.41-1.41z' fill='%23b8c4ff'/%3E%3C/svg%3E");
+            }
+
+            .search-wrapper select option {
+                background: var(--md-sys-color-surface-container);
+                color: var(--md-sys-color-on-surface);
+            }
+
+            /* 移动端深色优化 (嵌套在dark内部保证优先级) */
+            @media (max-width: 768px) {
+                .search-wrapper select {
+                    border-bottom-color: var(--md-sys-color-outline-variant);
+                }
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-top">
+                <div class="header-left">
+                    <h1 id="current-time"></h1>
+                    <p class="subtitle" id="current-date"></p>
+                </div>
+                <div class="header-right">
+                    <div class="search-container">
+                        <div class="search-wrapper">
+                            <select id="search-engine">
+                                <option value="https://www.bing.com/search?q=" selected>Bing</option>
+                                <option value="site">站内搜索</option>
+                                <option value="https://www.sogou.com/web?query=">搜狗</option>
+                                <option value="https://www.google.com/search?q=">Google</option>
+                                <option value="https://yandex.com/search/touch/?text=">Yandex</option>
+                                <option value="https://duckduckgogg42xjoc72x3sjasowoarfbgcmvfimaftt6twagswzczad.onion/?q=">DDG Onion</option>
+                                <option value="https://www.youtube.com/results?search_query=">YouTube</option>
+                                <option value="https://en.wikipedia.org/w/index.php?search=">Wikipedia</option>
+                                <option value="https://github.com/search?q=">GitHub</option>
+                            </select>
+                            <input type="search" id="search-input" placeholder="回车键搜索">
+                        </div>
+                    </div>
+
+                    <!-- 折叠图标 (位于搜索栏右侧) -->
+                    <div class="fold-toggle" id="foldToggle" role="button" tabindex="0" aria-label="展开或收起分类">
+                        <span class="toggle-icon icon-arrow-down" id="toggleIcon" aria-hidden="true"></span>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- 分类容器：始终占据flex中间区域，内部卡片通过内联style控制显隐 -->
+        <div class="categories" id="categoriesContainer">
+            
+            <div class="category">
+                <div class="category-header">
+                    <h2 id="category-tool">工具</h2>
+                </div>
+                <div class="category-description" aria-describedby="category-tool">
+                    实用类。
+                </div>
+                <div class="category-content">
+                    <a href="https://www.lddgo.net/index" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>在线工具大全</h3>
+                                <p>超多工具，站长最常用的工具箱。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://www.bing.com/Translator" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>微软翻译</h3>
+                                <p>站长最常用的翻译器。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://glosbe.com/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>Glosbe词典。</h3>
+                                <p>涵盖几乎所有语言，自称是最大的在线词典。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://convertio.co/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>文件转换器</h3>
+                                <p>将您的文件转换成任意格式。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://uutool.cn/qrcode-decode/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>在线二维码识别解码工具</h3>
+                                <p>适用于某些扫码功能不完全的浏览器。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://www.wenshushu.cn/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>文叔叔</h3>
+                                <p>跨设备快速文件传输。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://www.geogebra.org/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>GeoGebra</h3>
+                                <p>科学计算器。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://www.desmos.com/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>Desmos</h3>
+                                <p>图形计算器。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://www.bing.com/Translator" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>短链接生成器</h3>
+                                <p>可自定义后缀，设置有效期，短链接生成后也可更改原网站。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://jm-88.cc/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>JM88</h3>
+                                <p>短链接生成服务，可加密，可为图片和视频生成短链接，后期不可更改原网站。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://wannengrun.net/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>万能指令</h3>
+                                <p>只需将“wn.run/”添加到你访问的网址前，即可查找适用于该网站的工具。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://doc.vkeys.cn/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>落月API</h3>
+                                <p>提供一些实用的API。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://ahmia.fi/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>Ahmia</h3>
+                                <p>一个由Juha Nurmi创建的针对Tor隐藏服务的开源搜索引擎，在暗网与明网均可以访问。有审查。</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="category">
+                <div class="category-header">
+                    <h2 id="category-game">小游戏</h2>
+                </div>
+                <div class="category-description" aria-describedby="category-game">
+                    无聊就玩点小游戏吧！
+                </div>
+                <div class="category-content">
+                    <a href="https://game.hullqin.cn/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>桌游合集</h3>
+                                <p>纯粹的线上桌游。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://pointerpointer.com/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>Pointer Pointer</h3>
+                                <p>寻找你的鼠标指针或点击位置。</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        
+            <div class="category">
+                <div class="category-header">
+                    <h2 id="category-resource">资源网站</h2>
+                </div>
+                <div class="category-description" aria-describedby="category-game">
+                    也是一些类似这样的资源。
+                </div>
+                <div class="category-content">
+                    <a href="https://www.yxssp.com/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>异星软件空间</h3>
+                                <p>超多破解软件。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://www.ghxi.com/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>果核剥壳</h3>
+                                <p>也是很多破解软件。</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="category">
+                <div class="category-header">
+                    <h2 id="category-local">站内资源</h2>
+                </div>
+                <div class="category-description" aria-describedby="category-local">
+                    站长achtlv自己的资源。
+                </div>
+                <div class="category-content">
+                    <a href="https://achtlv.ccwu.cc/c" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>站长个人主页</h3>
+                                <p>内有站长联系方式。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://achtlv.ccwu.cc/u/dy" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>各类链接</h3>
+                                <p>不定期更新。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://p.achtlv.ccwu.cc/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>Cloudflare网页代理（密码找站长要）</h3>
+                                <p>用Github上的cf-proxy-ex项目部署。把要代理的网站加在该网址后即可。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://achtlv.ccwu.cc/weekly" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>TECH周刊</h3>
+                                <p>原作者：阮一峰</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://markdownreader.mutantcat.org/?url=https://v6.gh-proxy.org/https://raw.githubusercontent.com/achtlv/achtlv.github.io/main/找牌友.md" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>《找牌友》游戏规则</h3>
+                                <p>作者：achtlv</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://achtlv.ccwu.cc/w/sqz" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>网文禁书《淫奇抄 之 锁情咒》</h3>
+                                <p>作者：雪凡</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="category">
+                <div class="category-header">
+                    <h2 id="category-ai">AI资源</h2>
+                </div>
+                <div class="category-description" aria-describedby="category-ai">
+                    一些好用的AI。
+                </div>
+                <div class="category-content">
+                    <a href="https://duck.ai/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>Duck.ai</h3>
+                                <p>由DuckDuckGo提供的免费人工智能私聊工具，保护个人隐私。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://bin9.top/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>冻死企鹅AI导航站</h3>
+                                <p>一个常用AI导航。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://nav.laogou717.com/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>神烦老狗免费AI工具箱导航站</h3>
+                                <p>另一个AI导航，资源更丰富。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://viggle.ai/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>Viggle AI</h3>
+                                <p>用于制作AI视频，很多AI跳舞视频都是用这个做的。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://site.tinycms.xyz/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>免费ChatGPT</h3>
+                                <p>无需登录，免费使用ChatGPT Plus（可画图、上传文件）、Deepseek、Grok、Gemini等模型。</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="category">
+                <div class="category-header">
+                    <h2 id="category-software">好用软件</h2>
+                </div>
+                <div class="category-description" aria-describedby="category-software">
+                    收集的各种很好用的软件。
+                </div>
+                <div class="category-content">
+                    <a href="https://www.kzwr.com/api/v1/object?fid=45358ec406c44e1689.apk" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>李跳跳</h3>
+                                <p>用来跳过广告的软件，主要用于跳过开屏广告，使用方法上网搜。站内资源板块的各类链接内有站长推荐规则。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://gkd.li/guide/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>GKD</h3>
+                                <p>李跳跳停止维护后新出现的自定义屏幕点击应用，基于无障碍+选择器+订阅规则，可搭配Shizuku，可作为跳广告软件使用。站内资源板块的各类链接内有站长推荐规则。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://www.yxssp.com/download.php?author=东东&btitle=异星软件空间&id=27520" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>MacroDroid Pro破解版</h3>
+                                <p>一个强大的任务自动化应用程序，破解版无广告无限制。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="http://m.3673.com/down/89272.html" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>酷狗概念版2.5.5</h3>
+                                <p>酷狗概念版的旧版本，无更新弹窗，无广告，每天听歌自动领取1日概念版VIP。（所有音乐免费听，免费下载，不限音质）缺点是下载的歌曲无法通过其他播放器播放。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://beta.miaogongzi.cc/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>开源阅读3.0</h3>
+                                <p>依赖书源的开源阅读软件，可添加别人制作的书源，也可自定义添加书源。添加书源后，该软件将依赖书源从网站上获取书籍、有声书、漫画等内容。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://m.downkuai.com/android/179949.html" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>异次元漫画</h3>
+                                <p>依赖图源的漫画软件。站内资源板块的各类链接内有站长甄选图源。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://animeko.org/downloads" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>Animeko</h3>
+                                <p>在Github上开源的免费看动漫、番剧的软件，无广告。中国大陆推荐使用备用线路下载。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://gr.achtlv.ccwu.cc/CeuiLiSA/Pixiv-Shaft/1" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>Pixiv-Shaft</h3>
+                                <p>Pixiv的开源第三方客户端，支持画质增强，智能抠图，OCR，大陆直连。项目地址：github.com/CeuiLiSA/Pixiv-Shaft/</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://www.vmos.cn/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>VMOS</h3>
+                                <p>免费安卓虚拟机，也有付费云手机。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://wwzo.lanzoub.com/b01vhobni" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>Auto.js（密码：1233）</h3>
+                                <p>一款无需root权限的JavaScript自动化软件。也可搭配李跳跳，识别控件信息。（ID、Bounds等）</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="category">
+                <div class="category-header">
+                    <h2 id="category-media">音视频、图片解析</h2>
+                </div>
+                <div class="category-description" aria-describedby="category-media">
+                    对于那些需要会员的视频、音乐或图片，使用这些解析就可以免费观看、听或下载。
+                </div>
+                <div class="category-content">
+                    <a href="https://api.spapi.cn/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>开放API短视频解析</h3>
+                                <p>用于抖音、快手、B站等短视频的视频封面或视频内容解析下载， API开放，部分视频可去水印。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="http://v9j.net/?url=" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>智能VIP云解析多线路</h3>
+                                <p>视频解析，多接口，有广告</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://jiexi.789jiexi.com/?url=" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>789解析</h3>
+                                <p>视频解析，极速，但有很多广告</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://music.itzo.cn/a.php" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>音乐搜索器</h3>
+                                <p>支持多平台音乐下载，但仅限非会员音乐。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://api.toubiec.cn/wyapi.html" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>网易云无损解析</h3>
+                                <p>可以解析下载网易云的任意音乐，可以自由选择音质，多线路。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://downmp3.yt/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>YouTube to MP3</h3>
+                                <p>Youtube音视频解析下载。</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="category">
+                <div class="category-header">
+                    <h2 id="category-mirror">镜像站、网站加速</h2>
+                </div>
+                <div class="category-description" aria-describedby="category-mirror">
+                    许多网站部分地区无法访问，可以访问其镜像站，或使用其加速服务。
+                </div>
+                <div class="category-content">
+                    <a href="https://www.7ed.net/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>7ED</h3>
+                                <p>私有静态资源加速服务。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://scholar.lanfanshu.cn/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>学术资源搜索</h3>
+                                <p>最稳定的谷歌学术镜像，可以搜索全球文献。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://zhwk.kkwiki.win/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>中文维基百科境象</h3>
+                                <p>全世界最大的网络百科全书。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://www.sssam.com/tool/chatgpt/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>小白学术ChatGPT镜像</h3>
+                                <p>内容实用，以前经常用。有很多镜像站。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://gh-proxy.com/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>Github下载加速</h3>
+                                <p>将GitHub链接转换为多区域加速链接，解决GitHub访问慢、下载失败等问题。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://annas-archive.gl/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>Anna's Archive官方镜像</h3>
+                                <p>一家自由、非营利的影子图书馆元搜索引擎，由匿名的文件员团队所创。（即安娜和/或盗版图书馆镜像团队）</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://libgen.gl/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>Library Genesis官方镜像</h3>
+                                <p>简称LibGen，一个“影子图书馆”，可以在该网站上免费获取数百万本电子书、期刊论文等资源，涵盖了全世界多种语言。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://zlib.wwwnav.com/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>Z-Library第三方客户端</h3>
+                                <p>比镜像站更稳定。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://sci-hub.ru/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>Sci-Hub官方镜像</h3>
+                                <p>将知识带给每个人！Sci-Hub是知名的全球文献检索网站，这是其官方镜像。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://nyaa.moonchan.xyz/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>Nyaa Torrents表站镜像</h3>
+                                <p>Nyaa Torrents是一个专注于东亚媒体的BitTorrent网站。它是最大的公共动漫专用种子索引之一。其表站只有SFW内容。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://pixiv.pictures/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>Pixiv-Viewer</h3>
+                                <p>项目地址：github.com/asadahimeka/pixiv-viewer</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="category">
+                <div class="category-header">
+                    <h2 id="category-vpn">科学上网</h2>
+                </div>
+                <div class="category-description" aria-describedby="category-vpn">
+                    也叫翻墙。
+                </div>
+                <div class="category-content">
+                    <a href="https://clash.download/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>Clash</h3>
+                                <p>站长认为最好用的代理软件，使用方法上网搜。需要搭配机场服务使用。站内资源板块的各类链接内有免费机场订阅链接。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://my5353.com/vpn" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>绿茶VPN_2.6.7破解版</h3>
+                                <p>免费VPN只推荐这一个。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://gwait.com/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>不能专心代理</h3>
+                                <p>一个网页代理合集，里面有许多网页代理网站。大部分不可用，少部分可用的（要自己一个一个去试）还是不错的。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://clashx.pro/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>茶波博客</h3>
+                                <p>我用的最多的机场推荐，客观，有测速图。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://vpnbay.com/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>VPNBay</h3>
+                                <p>很早就有的机场推荐。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://gfwoff.org/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>GFWOFF</h3>
+                                <p>也是一个很早就有的机场推荐。</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="category">
+                <div class="category-header">
+                    <h2 id="category-r">R</h2>
+                </div>
+                <div class="category-description" aria-describedby="category-r">
+                    某些受限制的内容。
+                </div>
+                <div class="category-content">
+                    <a href="https://my5353.com/bre" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>Breeze 64位安卓版 下载</h3>
+                                <p>Breeze是哔咔漫画Picacomic和禁漫天堂JMComic3的二合一第三方客户端，短链接：my5353.com/bre</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://ex.moonchan.xyz/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>ExHentai.org镜像</h3>
+                                <p>E站里站的镜像站，免登录，所有人共用账号。该网站的本体是“月岛 - 匿名版”，制作该网站的目的是引流。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://jmcomic-zzz.one/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>禁漫天堂</h3>
+                                <p>JMComic3，简称JM，短链接：my5353.com/jmtt</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://nhentai.net/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>nHentai</h3>
+                                <p>一个成人向网站，提供扫描和翻译的漫画。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://skb.moonchan.xyz/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>Nyaa Torrents里站镜像</h3>
+                                <p>Nyaa Torrents是一个专注于东亚媒体的BitTorrents网站。它是最大的公共动漫专用种子索引之一。其里站只有NSFW内容。若使用非中国大陆IP访问该镜像站会被自动重定向到原网站。</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+                
+            <div class="category">
+                <div class="category-header">
+                    <h2 id="category-other">其他</h2>
+                </div>
+                <div class="category-description" aria-describedby="category-other">
+                    字面意思。
+                </div>
+                <div class="category-content">
+                    <a href="https://moonchan.xyz/" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>月岛 - 匿名版</h3>
+                                <p>免登录的发帖平台。</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://jm-88.cc/2eTsPA" target="_blank">
+                        <div class="link-item">
+                            <div class="link-text">
+                                <h3>skm</h3>
+                                <p>skm</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+                
+        </div>
+        
+        <div class="footer">
+            <p>Copyright © 2025 achtlv</p>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const searchInput = document.getElementById('search-input');
+            const searchEngine = document.getElementById('search-engine');
+            const foldToggle = document.getElementById('foldToggle');
+            const toggleIcon = document.getElementById('toggleIcon');
+            const categoriesContainer = document.getElementById('categoriesContainer');
+            const allCategories = Array.from(document.querySelectorAll('.category'));
+
+            // 状态管理：true = 折叠 (所有分类隐藏)，false = 展开 (根据搜索词显示)
+            let isCollapsed = true;   // 初始折叠
+
+            // 初始化：所有分类隐藏，图标向下
+            allCategories.forEach(cat => cat.style.display = 'none');
+            toggleIcon.classList.add('icon-arrow-down');
+            foldToggle.setAttribute('aria-expanded', 'false');
+
+            // ---------- 站内搜索过滤核心 (不再处理折叠状态，调用前需保证已展开) ----------
+            function siteSearch(term) {
+                const searchTerm = term.trim().toLowerCase();
+
+                if (!searchTerm) {
+                    // 空搜索词：显示所有分类
+                    allCategories.forEach(cat => cat.style.display = 'block');
+                    return;
+                }
+
+                allCategories.forEach(category => {
+                    const links = category.querySelectorAll('.link-item');
+                    const description = category.querySelector('.category-description')?.textContent.toLowerCase() || "";
+                    let hasVisibleLinks = false;
+
+                    links.forEach(link => {
+                        const title = link.querySelector('h3')?.textContent.toLowerCase() || "";
+                        const linkDescription = link.querySelector('p')?.textContent.toLowerCase() || "";
+
+                        if (title.includes(searchTerm) || linkDescription.includes(searchTerm) || description.includes(searchTerm)) {
+                            link.style.display = 'block';
+                            hasVisibleLinks = true;
+                        } else {
+                            link.style.display = 'none';
+                        }
+                    });
+
+                    // 分类本身显隐：只要有可见链接或分类描述匹配，就显示分类
+                    if (hasVisibleLinks || description.includes(searchTerm)) {
+                        category.style.display = 'block';
+                    } else {
+                        category.style.display = 'none';
+                    }
+                });
+            }
+
+            // ---------- 展开/折叠核心函数 ----------
+            function setCollapsed(collapsed) {
+                isCollapsed = collapsed;
+                if (collapsed) {
+                    // 折叠：全部隐藏
+                    allCategories.forEach(cat => cat.style.display = 'none');
+                    toggleIcon.classList.remove('icon-arrow-up');
+                    toggleIcon.classList.add('icon-arrow-down');
+                    foldToggle.setAttribute('aria-expanded', 'false');
+                } else {
+                    // 展开：根据当前搜索引擎和搜索词重新应用过滤/显示
+                    toggleIcon.classList.remove('icon-arrow-down');
+                    toggleIcon.classList.add('icon-arrow-up');
+                    foldToggle.setAttribute('aria-expanded', 'true');
+                    
+                    if (searchEngine.value === 'site' && searchInput.value.trim() !== '') {
+                        siteSearch(searchInput.value);   // 有词则过滤
+                    } else {
+                        // 非站内模式或无搜索词：显示所有分类
+                        allCategories.forEach(cat => cat.style.display = 'block');
+                    }
+                }
+            }
+
+            // 切换折叠/展开
+            function toggleCategories() {
+                setCollapsed(!isCollapsed);
+            }
+
+            foldToggle.addEventListener('click', toggleCategories);
+            foldToggle.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleCategories();
+                }
+            });
+
+            // ---------- 事件监听：输入、引擎切换、回车 ----------
+            searchInput.addEventListener('input', (e) => {
+                if (searchEngine.value === 'site') {
+                    if (isCollapsed) {
+                        setCollapsed(false);          // 展开并自动应用 siteSearch (内部调用)
+                    } else {
+                        siteSearch(e.target.value);    // 已展开，直接过滤
+                    }
+                }
+                // 非站内搜索模式：不改变分类显示（保持原样）
+            });
+
+            searchEngine.addEventListener('change', (e) => {
+                // 只有展开状态下才需要根据新引擎调整显示
+                if (!isCollapsed) {
+                    if (e.target.value === 'site') {
+                        // 切换到站内搜索：应用当前输入词过滤
+                        siteSearch(searchInput.value);
+                    } else {
+                        // 切换到其他引擎：显示所有分类
+                        allCategories.forEach(cat => cat.style.display = 'block');
+                    }
+                }
+            });
+
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    const engine = searchEngine.value;
+                    const term = searchInput.value.trim();
+                    
+                    if (engine === 'site') {
+                        // 站内搜索：展开并应用搜索（如果已折叠则展开，内部会触发过滤）
+                        if (isCollapsed) {
+                            setCollapsed(false);
+                        } else {
+                            siteSearch(term);
+                        }
+                    } else if (term) {
+                        // 外部搜索引擎：打开新窗口
+                        const url = engine + encodeURIComponent(term);
+                        window.open(url, '_blank');
+                    }
+                }
+            });
+
+            // ---------- 时间日期更新 ----------
+            function updateTimeDate() {
+                const now = new Date();
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const timeString = `${hours}:${minutes}`;
+                
+                const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                const year = now.getFullYear();
+                const month = months[now.getMonth()];
+                const day = now.getDate();
+                const dayWithSuffix = day + (day % 10 === 1 && day !== 11 ? 'st' : day % 10 === 2 && day !== 12 ? 'nd' : day % 10 === 3 && day !== 13 ? 'rd' : 'th');
+                const dateString = `${year} ${month} ${dayWithSuffix}`;
+                
+                const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+                const weekday = weekdays[now.getDay()];
+                
+                document.getElementById('current-time').textContent = timeString;
+                document.getElementById('current-date').textContent = `${dateString}, ${weekday}`;
+            }
+
+            updateTimeDate();
+            setInterval(updateTimeDate, 1000);
+
+            // 禁用右键菜单 (保持原样)
+            document.querySelectorAll('.category-content a').forEach(link => {
+                link.addEventListener('contextmenu', (e) => e.preventDefault());
+            });
+
+            // ---------- 搜索引擎偏好 cookie ----------
+            const COOKIE_NAME = "preferredSearchEngine";
+            const COOKIE_DAYS = 400;
+
+            function setCookie(name, value, days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                const expires = "; expires=" + date.toUTCString();
+                document.cookie = name + "=" + (value || "") + expires + "; path=/; Secure; SameSite=Lax";
+            }
+
+            function getCookie(name) {
+                const nameEQ = name + "=";
+                const ca = document.cookie.split(';');
+                for(let i = 0; i < ca.length; i++) {
+                    let c = ca[i];
+                    while (c.charAt(0) === ' ') c = c.substring(1);
+                    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length);
+                }
+                return null;
+            }
+
+            const savedEngine = getCookie(COOKIE_NAME);
+            if (savedEngine && Array.from(searchEngine.options).some(opt => opt.value === savedEngine)) {
+                searchEngine.value = savedEngine;
+            }
+
+            searchEngine.addEventListener('change', (e) => {
+                setCookie(COOKIE_NAME, e.target.value, COOKIE_DAYS);
+            });
+
+            // ---------- 新增：支持 URL 参数 ?s=关键词 进行站内搜索 ----------
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchTermFromUrl = urlParams.get('s');
+            if (searchTermFromUrl !== null) {
+                const decodedTerm = searchTermFromUrl.trim();  // URLSearchParams 已自动解码
+                // 设置为站内搜索模式
+                searchEngine.value = 'site';
+                searchInput.value = decodedTerm;
+                // 同时将偏好 cookie 更新为 site
+                setCookie(COOKIE_NAME, 'site', COOKIE_DAYS);
+                // 展开并执行搜索（如果已经折叠，setCollapsed 内部会根据有词调用 siteSearch）
+                setCollapsed(false);
+            }
+        })();
+    </script>
+</body>
+</html>
