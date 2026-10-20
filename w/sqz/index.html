@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>淫奇抄 之 锁情咒 · Material 3</title>
+    <!-- 使用 fonts.font.im 镜像 (Material 3 字体) -->
+    <link rel="preconnect" href="https://fonts.font.im">
+    <link rel="preconnect" href="https://fonts.font.im" crossorigin>
+    <link href="https://fonts.font.im/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        /* ----- 设计令牌 (Material 3, 主色 #0D47A1) ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --md-sys-color-primary: #0D47A1;        /* 主色调 深蓝 */
+            --md-sys-color-on-primary: #FFFFFF;      /* 主色上的文字 */
+            --md-sys-color-surface: #FFFFFF;         /* 卡片表面 */
+            --md-sys-color-surface-variant: #F5F7FA; /* 变体表面 (简介背景) */
+            --md-sys-color-background: #F1F3F6;      /* 整体背景 */
+            --md-sys-color-outline: #C0C4CC;         /* 边框/轮廓 */
+            --md-sys-color-on-surface: #1C1B1F;       /* 重要文字 */
+            --md-sys-color-on-surface-variant: #49454F; /* 辅助文字 */
+            --md-sys-color-shadow: rgba(0, 0, 0, 0.1);
+
+            --md-ref-typeface-brand: 'Roboto', sans-serif;
+
+            --md-sys-shape-corner-small: 8px;         /* 输入框圆角 */
+            --md-sys-shape-corner-medium: 16px;       /* 卡片圆角 */
+            --md-sys-shape-corner-large: 28px;        /* 按钮圆角 */
+
+            --md-sys-elevation-level1: 0 1px 3px 0 rgba(0,0,0,0.05), 0 2px 6px 2px rgba(0,0,0,0.02);
+            --md-sys-elevation-level2: 0 1px 4px 0 rgba(0,0,0,0.08), 0 4px 12px 4px rgba(0,0,0,0.03);
+        }
+
+        body {
+            font-family: var(--md-ref-typeface-brand);
+            background-color: var(--md-sys-color-background);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 16px;
+        }
+
+        .container {
+            background-color: var(--md-sys-color-surface);
+            padding: 2rem;
+            border-radius: var(--md-sys-shape-corner-medium);
+            box-shadow: var(--md-sys-elevation-level2);
+            max-width: 560px;
+            width: 100%;
+            transition: box-shadow 0.2s ease;
+        }
+
+        /* 标题样式 — M3 大标题 */
+        h1 {
+            color: var(--md-sys-color-on-surface);
+            margin-bottom: 1.25rem;
+            font-size: 2rem;
+            font-weight: 500;
+            line-height: 1.2;
+            letter-spacing: -0.01em;
+            word-break: break-word;
+        }
+
+        /* 简介卡片 — surface变体 + 柔和圆角 */
+        .description {
+            background-color: var(--md-sys-color-surface-variant);
+            border-radius: var(--md-sys-shape-corner-medium);
+            padding: 1.25rem 1.5rem;
+            margin: 1.75rem 0 1.5rem 0;
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 1rem;
+            line-height: 1.4; /* 保持紧凑的行高 */
+            white-space: pre-line;
+            box-shadow: var(--md-sys-elevation-level1);
+            border-left: none;
+        }
+
+        .description .title {
+            font-weight: 600;
+            color: var(--md-sys-color-primary);
+            margin-bottom: 0.75rem;
+            font-size: 1.3rem;
+            letter-spacing: 0.02em;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* 保留原有的 emoji 风格 */
+        .description .title::before {
+            content: "📖";
+            margin-right: 6px;
+            font-size: 1.3rem;
+        }
+
+        /* 按钮基座 */
+        .button {
+            display: inline-block;
+            width: 100%;
+            padding: 0 1.5rem;
+            border: none;
+            border-radius: var(--md-sys-shape-corner-large);
+            font-family: var(--md-ref-typeface-brand);
+            font-size: 1rem;
+            font-weight: 500;
+            line-height: 2.5rem;          /* 40px 高度 */
+            height: 2.75rem;               /* 44px 略高，易于点击 */
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s;
+            box-shadow: var(--md-sys-elevation-level1);
+            letter-spacing: 0.02em;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* 主要填充按钮 (开始阅读) — 使用主色 */
+        a.button {
+            background-color: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            border: none;
+            margin-bottom: 1.25rem;
+        }
+
+        a.button:hover {
+            background-color: #0b3d89;
+            box-shadow: 0 2px 8px 0 rgba(13, 71, 161, 0.3);
+        }
+
+        a.button:focus-visible {
+            outline: 2px solid var(--md-sys-color-primary);
+            outline-offset: 2px;
+        }
+
+        /* 外框型按钮 (跳转到指定章节) */
+        button.button {
+            background-color: transparent;
+            color: var(--md-sys-color-primary);
+            border: 1px solid var(--md-sys-color-primary);
+            box-shadow: none;
+            margin-top: 0.5rem;
+        }
+
+        button.button:hover {
+            background-color: rgba(13, 71, 161, 0.08);
+            border-color: var(--md-sys-color-primary);
+        }
+
+        button.button:focus-visible {
+            outline: 2px solid var(--md-sys-color-primary);
+            outline-offset: 2px;
+        }
+
+        /* 输入框 — outlined 风格 */
+        .chapter-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            margin: 0.5rem 0 0.25rem 0;
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: var(--md-sys-shape-corner-small);
+            font-family: var(--md-ref-typeface-brand);
+            font-size: 1rem;
+            line-height: 1.5;
+            color: var(--md-sys-color-on-surface);
+            background-color: var(--md-sys-color-surface);
+            transition: border 0.15s, outline 0.15s;
+            box-sizing: border-box;
+        }
+
+        .chapter-input:focus {
+            border-color: var(--md-sys-color-primary);
+            outline: 2px solid rgba(13, 71, 161, 0.20);
+            outline-offset: 0;
+        }
+
+        .chapter-input::placeholder {
+            color: #9A9BA6;
+            font-weight: 300;
+            opacity: 1;
+        }
+
+        /* 辅助提示文字 */
+        .hint {
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 0.8125rem;
+            margin-top: 0.25rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+            letter-spacing: 0.02em;
+            opacity: 0.8;
+        }
+
+        /* 输入框和按钮之间的自然间距 */
+        #chapterInput {
+            margin-top: 1rem;
+        }
+
+        /* 移动端微调 */
+        @media (max-width: 600px) {
+            .container {
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+            .description {
+                padding: 1rem 1.25rem;
+                font-size: 0.95rem;
+            }
+            .button {
+                height: 3rem;
+                line-height: 3rem;
+                font-size: 1rem;
+            }
+            .chapter-input {
+                padding: 0.875rem 1rem;
+            }
+        }
+
+        /* 移除数字输入 spinner（针对 Chrome） */
+        input[type=text] {
+            appearance: none;
+            -moz-appearance: textfield;
+        }
+
+        /* 确保链接下划线消失 */
+        a {
+            text-decoration: none;
+        }
+
+        /* 保留原来的 pre-line 换行，已在 description 上设置 */
+        .description br {
+            display: initial;
+        }
+
+        /* 简介中普通文本颜色略微柔和 */
+        .description span, 
+        .description p {
+            color: #3A3A44;
+        }
+
+        /* 最后的提示仍然采用 M3 辅助色 */
+        .hint {
+            padding-left: 0.25rem;
+        }
+
+        /* 添加微小的点击反馈（涟漪效果模拟） */
+        .button:active {
+            transform: scale(0.98);
+            transition: transform 0.1s;
+        }
+        a.button:active {
+            background-color: #093272;
+        }
+        button.button:active {
+            background-color: rgba(13, 71, 161, 0.18);
+        }
+
+        /* 适配桌面 hover 只作用于非触摸 */
+        @media (hover: hover) {
+            a.button:hover {
+                background-color: #0b3d89;
+            }
+            button.button:hover {
+                background-color: rgba(13, 71, 161, 0.08);
+            }
+        }
+
+        /* 阴影深度变化 (可选) */
+        .container:hover {
+            box-shadow: var(--md-sys-elevation-level2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>淫奇抄 之 锁情咒</h1>
+        <div class="description"><div class="title">书籍简介</div>作者：雪凡
+            类型：言情
+            状态：已完结
+            序言：
+            　　渴求爱的人有很多。
+            　　渴求爱的方式也有很多种。
+            　　的确，在感情之中，爱情算是最为宝贵几种之一，为了得到一个死心塌地至死不渝的爱人，许多人甘心付出很多，牺牲很大。
+            　　但爱情的珍贵，究竟是因为难得，还是它真的无比重要呢？
+            　　假如可以轻易让异性对你痴情眷恋，在你的眼中，曾经的梦中女神还会具有那么强烈的吸引力吗？
+            　　这答案……似乎不是很容易探究出结果的样子。
+            　　那就算了，还是去看看咖啡馆里，那个面色苍白的憔悴男人正在和对面年轻可爱的美女聊着什么吧。
+            　　看上去，他似乎正在讲什么久远的故事，上来，就用到了二十年前这样的词呢……
+        </div>
+
+        <!-- 绝对路径链接，保留原有功能 -->
+        <a href="/w/sqz/sqz.html" class="button">开始阅读</a>
+
+        <!-- 输入框与跳转按钮，样式已适配 M3 -->
+        <input type="text" id="chapterInput" class="chapter-input" placeholder="请输入章节数">
+        <div class="hint">支持格式：第100章、第一百章、100、一百</div>
+        <button class="button" onclick="goToChapter()">跳转到指定章节</button>
+    </div>
+
+    <script>
+        function goToChapter() {
+            const input = document.getElementById('chapterInput').value.trim();
+            if (!input) {
+                alert('请输入章节数');
+                return;
+            }
+            const standardTitle = normalizeChapter(input);
+            // 绝对路径跳转，保留原逻辑
+            window.location.href = `/w/sqz/sqz.html?chapter=${encodeURIComponent(standardTitle)}`;
+        }
+
+        function normalizeChapter(input) {
+            input = input.trim();
+            let part = null;
+            let match = input.match(/^第([零一二三四五六七八九十百千万\d]+)章$/);
+            if (match) part = match[1];
+            if (!part) {
+                match = input.match(/^([零一二三四五六七八九十百千万\d]+)章$/);
+                if (match) part = match[1];
+            }
+            if (!part) {
+                match = input.match(/^第([零一二三四五六七八九十百千万\d]+)$/);
+                if (match) part = match[1];
+            }
+            if (!part) {
+                match = input.match(/^([零一二三四五六七八九十百千万\d]+)$/);
+                if (match) part = match[1];
+            }
+            if (!part) {
+                if (input.startsWith('第') && input.endsWith('章')) {
+                    return input;
+                } else {
+                    return '第' + input + '章';
+                }
+            }
+            let chinesePart;
+            if (/^\d+$/.test(part)) {
+                const num = parseInt(part, 10);
+                chinesePart = numberToChinese(num);
+            } else {
+                chinesePart = part;
+            }
+            return '第' + chinesePart + '章';
+        }
+
+        function numberToChinese(num) {
+            if (num < 1 || num > 9999) return num.toString();
+            const chineseNums = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+            const units = ['', '十', '百', '千', '万'];
+            const str = num.toString();
+            let result = '';
+            let zeroFlag = false;
+            for (let i = 0; i < str.length; i++) {
+                const digit = parseInt(str[i]);
+                const unit = units[str.length - 1 - i];
+                if (digit === 0) {
+                    zeroFlag = true;
+                } else {
+                    if (zeroFlag) {
+                        result += '零';
+                        zeroFlag = false;
+                    }
+                    result += chineseNums[digit] + unit;
+                }
+            }
+            if (result.startsWith('一十')) {
+                result = result.replace('一十', '十');
+            }
+            return result;
+        }
+    </script>
+</body>
+</html>
