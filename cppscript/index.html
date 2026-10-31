@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="light dark" />
+<title>CppScript 语法规范 v14.2</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f6f8fb;
+    --panel: #ffffff;
+    --text: #1a2332;
+    --muted: #5a6a82;
+    --accent: #2563eb;
+    --code-bg: #eef2f7;
+    --border: #d0d7e2;
+    --heading: #0f172a;
+    --h3: #334155;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1419;
+      --panel: #1a2332;
+      --text: #e7ecf3;
+      --muted: #8b9bb4;
+      --accent: #3d8bfd;
+      --code-bg: #0b1220;
+      --border: #2a3548;
+      --heading: #ffffff;
+      --h3: #c5d0e0;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+  }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+  h1 { font-size: 1.75rem; margin: 0 0 0.5rem; color: var(--heading); }
+  h2 { font-size: 1.35rem; margin-top: 2.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; color: var(--heading); }
+  h3 { font-size: 1.1rem; margin-top: 1.5rem; color: var(--h3); }
+  .meta { color: var(--muted); margin-bottom: 1.5rem; }
+  a { color: var(--accent); }
+  pre, code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.9em; }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.1rem;
+    overflow-x: auto;
+    line-height: 1.5;
+  }
+  code { background: var(--code-bg); padding: 0.12em 0.35em; border-radius: 4px; }
+  pre code { background: none; padding: 0; }
+  ul { padding-left: 1.25rem; }
+  li { margin: 0.25rem 0; }
+  p { margin: 0.55rem 0; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<p>CppScript 语法规范 v14.2（完整版）</p>
+<p>语言：CppScript　｜　版本：v14.2　｜　规则文件：任意文本（≤ 100 KB）</p>
+<p>面向 C++ 用户，无编译期、无指针、无头文件、无宏。</p>
+<p>核心：main 的 return 只返回 URL，body 输出统一用 out 且实时流式推送。</p>
+<p>v14.2 变更：修复声明节点 type 字段冲突；main 改为 auto main；key 支持 {1,&quot;abc&quot;,false} 下标访问；with 绑定整段表达式；关键字不可作变量名；Worker 按需表单输入 in/key。</p>
+<hr />
+<p>目录</p>
+<p>1. 基础</p>
+<p>2. 类型系统</p>
+<p>3. 变量与作用域</p>
+<p>4. 运算符</p>
+<p>5. 语句</p>
+<p>6. 函数与 return</p>
+<p>7. 原生数组</p>
+<p>8. 容器</p>
+<p>9. struct</p>
+<p>10. 引用</p>
+<p>11. 输入流</p>
+<p>12. 内置函数</p>
+<p>13. 内置变量</p>
+<p>14. 执行限制与错误</p>
+<p>15. 完整示例</p>
+<p>16. 常见坑</p>
+<hr />
+<p>1. 基础</p>
+<p>1.1 文件结构</p>
+<ul>
+<li>单个 UTF-8 文本（不要求扩展名是 .txt，.md .json .rule 都可以）</li>
+<li>通过 ?url= 拉取，大小 ≤ 100 KB</li>
+<li>语句以 ; 分隔</li>
+<li>标识符 [A-Za-z_][A-Za-z0-9_]*，区分大小写</li>
+<li>注释：// 单行、/* 多行（不嵌套） */</li>
+<li>关键字、类型名小写</li>
+</ul>
+<p>1.2 版本号</p>
+<p>文件顶部可选：</p>
+<pre><code>// dsl: 14</code></pre>
+<ul>
+<li>不写 → 默认按最新版本（当前 v14）解析</li>
+<li>写了不支持的版本（如 // dsl: 99）→ E41</li>
+</ul>
+<p>1.3 关键字</p>
+<pre><code>number  string  bool  auto  void  struct
+if  else  switch  case  default
+for  while  break  continue
+return  delete  in  out  getchar
+true  false
+with  param  header  proxy  UA</code></pre>
+<p><strong>关键字不能作变量名 / 参数名 / 字段名。</strong>例如 <code>string UA = &quot;...&quot;</code> 会报 E03，应改成 <code>string userAgent = &quot;...&quot;</code>，再用 <code>with UA userAgent</code>。</p>
+<p>1.4 最小示例</p>
+<pre><code>auto main() {
+    return &quot;https://example.com/latest.zip&quot;;
+}</code></pre>
+<p>1.5 访问方式</p>
+<pre><code>https://cpps.&lt;你的子域&gt;/?url=&lt;规则文件URL&gt;</code></pre>
+<p>参数说明：</p>
+<ul>
+<li><code>?url=</code> 规则文件 URL（必填）</li>
+<li><code>?in=</code> 输入流（可选：纯文本、或 <code>http(s)://</code> 远程文本）</li>
+<li><code>?key=</code> 映射到只读内置变量 <code>key</code>（可选；支持 <code>{1,&quot;abc&quot;,false}</code>）</li>
+<li><code>?run=1</code> 强制跳过表单、立即执行</li>
+</ul>
+<p>1.6 Worker 交互页（按需输入、无缝运行）</p>
+<ul>
+<li>打开 <code>?url=</code> 时先解析规则：检测是否使用 <code>key</code>（含标识符 <code>key</code> 与 <code>q_get(&quot;key&quot;)</code>）以及标准输入（<code>in()</code> / <code>getchar</code>）。</li>
+<li><strong>都未使用</strong> → 直接执行，不显示输入框。</li>
+<li><strong>使用了且 URL 中还缺少对应参数</strong> → 只显示需要的框（一个或两个）+ <strong>一个「运行」按钮</strong>。</li>
+<li>可以<strong>留空</strong>再点运行：仍会补上 <code>key=</code> / <code>in=</code>（值为空）并执行。</li>
+<li>点「运行」后：页面脚本把 <code>url</code>、<code>run=1</code> 以及用到的 <code>key</code>/<code>in</code>（可为空）写入地址并 <code>location.assign</code> 打开结果页（整页跳转，避免 fetch 写回导致白屏）。</li>
+<li>已带齐参数或带 <code>&amp;run=1</code> → 跳过表单直接跑。</li>
+<li>无 <code>?url=</code> 访问根路径 → 本语法文档（跟随系统浅色/深色主题）。</li>
+</ul>
+<p>示例（幂运算规则，需 key）：</p>
+<pre><code>https://cpps.example/?url=https://example.com/cpps.txt
+→ 显示 key 输入框 → 填 2^3 → 运行 → 输出 2^3=8
+
+https://cpps.example/?url=https://example.com/cpps.txt&amp;key=2%5E3
+→ 已有 key，直接运行</code></pre>
+<p>1.7 在 URL 里给 <code>in</code> 换行</p>
+<ul>
+<li>查询参数中换行请写成 <code>%0A</code>（CRLF 可用 <code>%0D%0A</code>）</li>
+<li>示例：<code>?in=hello%0Aworld</code> → 两行 <code>hello</code> / <code>world</code></li>
+<li>更推荐：页面文本框直接换行，或 <code>?in=https://...</code> 拉远程文件</li>
+<li>注意：<code>&amp;</code> 仍是参数分隔符，正文里的 <code>&amp;</code> 需写成 <code>%26</code></li>
+</ul>
+<hr />
+<p>2. 类型系统</p>
+<p>2.1 类型一览</p>
+<p>类型 字面量 说明</p>
+<p>number 42 3.14 -2 双精度浮点</p>
+<p>string &quot;abc&quot; &#x27;abc&#x27; 单双引号等价</p>
+<p>bool true false </p>
+<p>auto — 仅声明用，非真实类型</p>
+<p>deque&lt;T&gt; — 双端队列容器</p>
+<p>set&lt;T&gt; — 去重集合容器</p>
+<p>map&lt;K, V&gt; — 键值映射容器</p>
+<p>struct 名 — 自定义结构体（可嵌套）</p>
+<p>T a[n]... — 原生数组（最高 4 维）</p>
+<p>T&amp; — 引用</p>
+<p>void — 仅函数返回类型</p>
+<p>没有：整型/浮点区分、char、指针、枚举、联合、nullptr、引用返回值。</p>
+<p>2.2 隐式转换</p>
+<p>场景 规则</p>
+<p>+ 任一侧 string 转 string 拼接（1 + &quot;a&quot; → &quot;1a&quot;）</p>
+<p>== != 类型不同 都转 string 比较</p>
+<p>&lt; &gt; &lt;= &gt;= 任一侧 string → 字典序；都 number → 数值</p>
+<p>赋值给 bool 0 → false，非零 → true；&quot;&quot; → false，非空 → true</p>
+<p>&amp;&amp; \|\| ! if (x) 0/&quot;&quot;/false → false，其余 → true</p>
+<p>bool 参与算术/位运算 true → 1，false → 0</p>
+<p>2.3 算术语义</p>
+<p>表达式 结果</p>
+<p>7 / 2 3.5（浮点除法）</p>
+<p>-7 / 2 -3.5</p>
+<p>7 % 2 1</p>
+<p>-7 % 2 -1（余数符号同被除数）</p>
+<p>7 % -2 1</p>
+<p>x / 0 x % 0 运行时 E34</p>
+<p>整数除法用 floor(7 / 2) = 3。</p>
+<hr />
+<p>3. 变量与作用域</p>
+<p>3.1 标量（可无初值）</p>
+<pre><code>number n = 1;
+string s = &quot;abc&quot;;
+bool   b = true;
+number x;                 // 未初始化（合法）</code></pre>
+<ul>
+<li>可写：x = 5; → 已初始化</li>
+<li>不可读：参与任何表达式 → 运行时 E36</li>
+<li>全局、局部同规则</li>
+</ul>
+<p>3.2 auto 推导</p>
+<p>初始化器 结果</p>
+<p>数字字面量 number</p>
+<p>字符串字面量 string</p>
+<p>bool 字面量 ✗ E25</p>
+<p>变量 auto x = y; = y 的类型（含 bool/struct/容器）</p>
+<p>函数调用 auto x = f(); = f 返回类型（f 不能 void）</p>
+<p>a + b 两侧 number → number；否则 → string</p>
+<p>a - b a * b a / b a % b number</p>
+<p>比较 / 逻辑表达式 ✗ E25</p>
+<p>容器 / struct 字面量 ✗ E25</p>
+<p>无初值 auto x; ✗ E25</p>
+<p>3.3 全局变量</p>
+<p>函数外部声明的变量是全局变量，函数内可读写。</p>
+<p>3.4 作用域</p>
+<ul>
+<li>函数外 → 全局；函数内 → 函数；{ } → 块</li>
+<li>内层可遮蔽外层</li>
+<li>循环体内声明的变量每次迭代独立</li>
+</ul>
+<p>3.5 delete</p>
+<pre><code>delete x;                 // 删变量
+delete a[i];              // 等价 a.erase(i)
+delete m[&quot;key&quot;];          // 等价 m.erase(&quot;key&quot;)
+delete a;                 // 删数组 / 容器 / 容器组
+delete r;                 // 只删引用，原变量保留</code></pre>
+<p>函数参数不能 delete（E35）。</p>
+<hr />
+<p>4. 运算符</p>
+<p>4.1 优先级（C 风格，从高到低）</p>
+<p>级 运算符 结合</p>
+<p>1 () [] . 后缀 i++ i-- 左</p>
+<p>2 ! ~ -（一元） 前缀 ++i --i 右</p>
+<p>3 * / % 左</p>
+<p>4 + - 左</p>
+<p>5 &lt;&lt; &gt;&gt; 左</p>
+<p>6 &lt; &lt;= &gt; &gt;= 左</p>
+<p>7 == != 左</p>
+<p>8 &amp; 左</p>
+<p>9 ^ 左</p>
+<p>10 \| 左</p>
+<p>11 &amp;&amp; 左（短路）</p>
+<p>12 \|\| 左（短路）</p>
+<p>13 = += -= *= /= %= &lt;&lt;= &gt;&gt;= &amp;= ^= \|= 右</p>
+<p>4.2 位运算</p>
+<p>运算符 说明</p>
+<p>a &amp; b 按位与</p>
+<p>a \| b 按位或</p>
+<p>a ^ b 按位异或</p>
+<p>~a 按位取反（~a == -(a+1)）</p>
+<p>a &lt;&lt; n 左移</p>
+<p>a &gt;&gt; n 右移（算术右移）</p>
+<p>操作数必须是整数 number（x == floor(x)），值域 [-2^31, 2^31-1]，否则 E34。</p>
+<p>4.3 自增自减</p>
+<p>表达式 返回 说明</p>
+<p>i++ 旧值副本（右值） i 加 1</p>
+<p>i-- 旧值副本（右值） i 减 1</p>
+<p>++i 引用（新值） i 先加 1</p>
+<p>--i 引用（新值） i 先减 1</p>
+<ul>
+<li>++i / --i 返回引用，可链式：++(++i) ✓、(++i) = 5 ✓</li>
+<li>i++ / i-- 返回右值：(i++)++ ✗ E45、(i++) = 5 ✗ E46</li>
+</ul>
+<p>4.4 bool 的 ++ / --</p>
+<p>全部定义为取反（b = !b）：</p>
+<pre><code>bool b = true;
+bool old = b++;        // old = true,  b = false
+bool nw  = ++b;        // b = true,    nw  = true</code></pre>
+<p>4.5 复合赋值</p>
+<p>运算符 适用类型</p>
+<p>x += y number、string（拼接）、bool</p>
+<p>x -= y x *= y x /= y x %= y number、bool</p>
+<p>x &lt;&lt;= n x &gt;&gt;= n x &amp;= y x \|= y x ^= y number、bool（整数）</p>
+<ul>
+<li>返回左值引用，可链式：(a += 1) *= 2 ✓</li>
+<li>string 只支持 +=，其他 → E11</li>
+<li>位运算操作数必须整数 → E34</li>
+</ul>
+<p>4.6 bool 的复合赋值</p>
+<p>流程：b 转 number（true=1）→ y 转 number → 运算 → 非零转 true → 赋回。</p>
+<pre><code>bool a = true;
+a += 1;                // true
+a -= 1;                // false
+a -= 1;                // true（0-1=-1 非零）</code></pre>
+<hr />
+<p>5. 语句</p>
+<p>5.1 if / else</p>
+<pre><code>if (cond) { ... }
+else if (cond2) { ... }
+else { ... }</code></pre>
+<p>5.2 switch</p>
+<pre><code>switch (x) {
+    case 1: out(&quot;one&quot;); break;
+    case 2:
+    case 3: out(&quot;two-or-three&quot;); break;
+    default: out(&quot;other&quot;);
+}</code></pre>
+<ul>
+<li>x 可为 number 或 string；case 值必须是字面量</li>
+<li>C 风格 fallthrough；break 跳出</li>
+</ul>
+<p>5.3 for / while</p>
+<pre><code>for (number i = 0; i &lt; n; i++) { ... }
+while (cond) { ... }</code></pre>
+<p>单循环上限 10 000 次。</p>
+<p>5.4 范围 for</p>
+<pre><code>for (auto x in arr) { out(to_str(x)); }              // deque/set/一维数组
+for (string k in m) { out(k + &quot; = &quot; + to_str(m[k])); }  // map：迭代变量是 key</code></pre>
+<p>容器组 / 多维数组不支持（E30）。</p>
+<p>5.5 break / continue</p>
+<p>只在循环内有效。</p>
+<hr />
+<p>6. 函数与 return</p>
+<p>6.1 辅助函数</p>
+<pre><code>number add(number a, number b) { return a + b; }
+void log(string msg) { out(msg); }</code></pre>
+<ul>
+<li>返回类型显式声明，参数类型显式（不能 auto）</li>
+<li>不支持：重载、默认参数、可变参数、函数指针、匿名函数、引用返回值</li>
+<li>辅助函数返回类型可为 auto（可不 return）</li>
+<li>递归深度上限 100</li>
+<li>前向引用允许</li>
+<li>有返回类型函数所有路径必须 return（E18）</li>
+</ul>
+<p>6.2 auto main()</p>
+<p>必须显式写 auto（推荐）或 void（兼容），恰好一个，无参数。不写 / 返回类型不是 auto/void → E14。</p>
+<p>6.3 主函数 return</p>
+<p>主函数 return 只能返回 URL，body 输出统一用 out。</p>
+<p>合法形式：</p>
+<p>写法 响应</p>
+<p>return &quot;https://example.com/a.zip&quot;; 302</p>
+<p>return &quot;example.com/a.zip&quot;; 302（补 https）</p>
+<p>return &quot;中文.com/文件.zip&quot;; 302（补 https + punycode + 路径编码）</p>
+<p>return &quot;abc.onion/file.zip&quot;; 302（补 http）</p>
+<p>return &quot;abc.i2p/download&quot;; 302（补 http）</p>
+<p>return &quot;url&quot; with 301; 301</p>
+<p>return with 404; 404 + 输出（或流式 200，见 §6.4）</p>
+<p>return 404; 404 + 输出</p>
+<p>return; 200 + 输出</p>
+<p>自然结束 200 + 输出</p>
+<p>禁止形式：</p>
+<p>写法 错误</p>
+<p>return &quot;hello world&quot;; E43（host 含空格）</p>
+<p>return &quot;hello&quot; with 200; E44（body 只能 out）</p>
+<p>return &quot;&quot;; E43</p>
+<p>URL 规范化流程：</p>
+<pre><code>1. raw 为空 → E43
+2. 解析协议头：http:// 或 https:// 开头（大小写不敏感）→ 协议 + rest
+3. 从 rest 提取 host（到第一个 &#x27;/&#x27; 或 &#x27;:&#x27; 之前）
+4. host 非法字符检查：空白、控制字符、&lt; &gt; &quot; { } | \ ^ [ ] ` @ # ? → E43
+5. 端口检查：必须是 1..65535 的整数，否则 E43
+6. 协议未定：host 以 .onion / .i2p 结尾 → http，否则 → https
+7. new URL(protocol + &#x27;://&#x27; + rest) → 失败 → E43
+8. 返回 url.href（IDN 自动 punycode，路径自动编码）</code></pre>
+<p>示例：</p>
+<p>字符串 结果</p>
+<p>&quot;example.com/a.zip&quot; https://example.com/a.zip</p>
+<p>&quot;中文.com/文件.zip&quot; https://xn--fiq228c.com/%E6%96%87%E4%BB%B6.zip</p>
+<p>&quot;例子.中国/a&quot; https://xn--fsqu00a.xn--fiqs8s/a</p>
+<p>&quot;abc.onion/file.zip&quot; http://abc.onion/file.zip</p>
+<p>&quot;abc.i2p/download&quot; http://abc.i2p/download</p>
+<p>&quot;example.com/a b.zip&quot; https://example.com/a%20b.zip</p>
+<p>&quot;hello world&quot; E43（host 含空格）</p>
+<p>&quot;&quot; E43</p>
+<p>6.4 out 与流式渲染（v14.1 核心）</p>
+<p>out 是唯一 body 输出通道，且是实时流式推送。</p>
+<p>6.4.1 双路响应</p>
+<p>脚本行为 响应模式</p>
+<p>从未调用 out buffer 模式：脚本执行完后，按 return 决定 302 / 200+body</p>
+<p>调用过 out（至少一次） 流式模式：第一次 out 时立即返回 200 + ReadableStream，后续每次 out 实时推送</p>
+<p>6.4.2 buffer 模式（未调 out）</p>
+<pre><code>auto main() {
+    return &quot;https://example.com/a.zip&quot;;     // 302
+}
+
+auto main() {
+    return with 404;                        // 404（空 body）
+}
+
+auto main() {
+    return;                                 // 200（空 body）
+}</code></pre>
+<p>6.4.3 流式模式（调了 out）</p>
+<pre><code>auto main() {
+    out(&quot;step 1\n&quot;);      // 客户端立即收到
+    // ... 耗时操作
+    out(&quot;step 2\n&quot;);      // 客户端立即收到
+    out(&quot;step 3\n&quot;);      // 客户端立即收到
+    return;               // 关闭流
+}</code></pre>
+<ul>
+<li>响应状态码固定 200</li>
+<li>Content-Type: text/plain; charset=utf-8（固定）</li>
+<li>return with N / return N 中的 N 被忽略（已经 200 了）</li>
+<li>return &quot;url&quot; → E47：流式模式下不能重定向，末尾追加 [E47: cannot redirect after out()]</li>
+<li>出错时：流末尾追加 [error: &lt;message&gt;] 并关闭连接</li>
+</ul>
+<p>6.4.4 对比</p>
+<p>场景 buffer 模式 流式模式</p>
+<p>return &quot;url&quot; 302 E47 提示追加末尾</p>
+<p>return with N N + body 200（N 忽略）</p>
+<p>return; / 自然结束 200 + body 200（已推送完）</p>
+<p>输出时机 一次性 逐 chunk</p>
+<p>Content-Type 可自定义（with header） 固定 text/plain</p>
+<p>6.4.5 何时用流式</p>
+<ul>
+<li>长耗时脚本：用户想看到进度</li>
+<li>大输出：不想全缓冲在内存</li>
+<li>否则不调 out，享受 buffer 模式的灵活性（302 / 自定义状态码）</li>
+</ul>
+<p>6.5 引用参数</p>
+<pre><code>void addOne(number&amp; x) { x = x + 1; }
+void appendTo(deque&lt;string&gt;&amp; arr, string v) { arr.push_back(v); }</code></pre>
+<p>调用时传左值，传字面量 → E33。</p>
+<hr />
+<p>7. 原生数组</p>
+<p>7.1 声明</p>
+<pre><code>number a[5];                 // 5 个 number，默认 0
+string b[3];                 // 3 个 string，默认 &quot;&quot;
+Asset  d[4];                 // 4 个 Asset
+
+number e[n];                 // n 必须已初始化（否则 E36）
+
+number m[3][4];              // 3×4 二维
+string t[2][3][4];           // 2×3×4 三维（最高 4 维）</code></pre>
+<ul>
+<li>元素类型：number / string / bool / struct 名</li>
+<li>不支持元素类型是 deque / set / map</li>
+<li>大小必须是已初始化的 number 变量或字面量</li>
+<li>auto a[5]; → E25</li>
+</ul>
+<p>7.2 访问与遍历</p>
+<pre><code>number a[5];
+a[0] = 10;
+out(to_str(a[2]));           // 0
+
+number m[3][4];
+m[1][2] = 99;
+
+for (auto x in a) { out(to_str(x)); }              // 一维可范围 for
+for (number i = 0; i &lt; 3; i++) {
+    for (number j = 0; j &lt; 4; j++) {
+        m[i][j] = i * 4 + j;
+    }
+}</code></pre>
+<p>越界 → 运行时 E23。</p>
+<p>7.3 限制</p>
+<ul>
+<li>无容器方法（push/pop/insert/erase/find/fill/clear）→ E32</li>
+<li>元素只能通过下标读写</li>
+<li>delete a; 释放整个数组；delete a[i]; 不支持</li>
+</ul>
+<p>7.4 声明方式对比</p>
+<p>声明 是什么</p>
+<p>number a[5]; 原生数组，固定 5 个元素</p>
+<p>deque&lt;number&gt; a; 动态容器</p>
+<p>deque&lt;number&gt; a(5); 容器，初始 size=5，可 push/pop</p>
+<p>deque&lt;number&gt; a[5]; 容器组（5 个独立空容器）</p>
+<p>number m[3][4]; 原生二维数组</p>
+<hr />
+<p>8. 容器</p>
+<p>8.1 三种容器；其中 <code>deque&lt;auto&gt;</code> / <code>set&lt;auto&gt;</code> 在 push/insert 时按实参决定元素运行时类型（number/string/bool 可混用）。内置 <code>key</code> 在花括号形式下为 <code>deque&lt;auto&gt;</code></p>
+<p>类型 说明</p>
+<p>deque&lt;T&gt; 双端队列，可重复，支持下标</p>
+<p>set&lt;T&gt; 去重，按插入顺序，支持下标</p>
+<p>map&lt;K, V&gt; 键值映射</p>
+<ul>
+<li>deque/set 的 T ∈ number / string / bool / auto / struct 名</li>
+<li>map 的 K ∈ number / string；V ∈ number / string / bool / struct 名</li>
+<li>不支持嵌套 → E19</li>
+</ul>
+<p>8.2 声明</p>
+<pre><code>deque&lt;number&gt; a = { 1, 2, 3 };
+set&lt;string&gt;   s = { &quot;x&quot;, &quot;y&quot; };
+deque&lt;number&gt; b;              // 空
+deque&lt;number&gt; c(5);           // size=5，元素全 0
+
+map&lt;string, number&gt; m;                        // 空
+map&lt;string, number&gt; m2 = { &quot;a&quot;: 1, &quot;b&quot;: 2 };  // 字面量</code></pre>
+<p>8.3 deque / set 成员</p>
+<p>成员 返回 说明</p>
+<p>d[i] T 下标访问，越界 E23</p>
+<p>d.size() number 元素个数</p>
+<p>d.find(v) number 第一个等于 v 的下标，不存在 -1</p>
+<p>d.front() / d.back() T 空 E23</p>
+<p>d.push_back(v) / d.push_front(v) void </p>
+<p>d.pop_back() / d.pop_front() void </p>
+<p>d.erase(i) void 删下标 i</p>
+<p>d.insert(i, v) void 在下标 i 处插入</p>
+<p>d.clear() void 清空</p>
+<p>d.fill(v) void 全部填 v</p>
+<p>set 区别：push_back / push_front / insert 时若 v 已存在则无操作；fill(v) 后只有 1 个元素。</p>
+<p>8.4 map 成员</p>
+<p>成员 返回 说明</p>
+<p>m[k] V 读：存在返回 value，不存在返回 V 默认值（不插入）</p>
+<p>m[k] = v — 写：存在则改，不存在则插入</p>
+<p>m.size() number 键值对数量</p>
+<p>m.has(k) bool 键是否存在</p>
+<p>m.erase(k) void 删除键（不存在则无操作）</p>
+<p>m.clear() void 清空</p>
+<p>m.keys() deque&lt;K&gt; 所有键（按插入顺序）</p>
+<p>m.values() deque&lt;V&gt; 所有值（按插入顺序）</p>
+<p>map 不能用整数下标 → E42。</p>
+<pre><code>map&lt;string, number&gt; stats;
+stats[&quot;apple&quot;] = 10;
+stats[&quot;apple&quot;] = 15;         // 覆盖
+out(to_str(stats[&quot;cherry&quot;])); // 0（不存在返回 V 默认值）
+for (string k in stats) {
+    out(k + &quot; = &quot; + to_str(stats[k]) + &quot;\n&quot;);
+}</code></pre>
+<p>8.5 容器组 deque&lt;T&gt; a[n]</p>
+<pre><code>deque&lt;string&gt; groups[3];      // 3 个独立空 deque
+groups[0].push_back(&quot;apple&quot;);
+groups[0][0];                 // &quot;apple&quot;</code></pre>
+<ul>
+<li>组本身不可 push/pop/clear/fill/insert/erase（E31）</li>
+<li>范围 for 不支持（E30）</li>
+</ul>
+<hr />
+<p>9. struct</p>
+<p>9.1 定义</p>
+<pre><code>struct Version {
+    string tag;
+    number major;
+};
+
+struct Release {
+    Version version;         // 嵌套 struct
+    string downloadUrl;
+};</code></pre>
+<ul>
+<li>字段类型：number / string / bool / auto / 另一个已定义的 struct 名</li>
+<li>被嵌套的 struct 必须在当前 struct 之前定义</li>
+<li>禁止循环引用 → E40</li>
+<li>嵌套深度上限 8 层</li>
+<li>字段默认值：number=0，string=&quot;&quot;，bool=false，struct=字段全默认</li>
+</ul>
+<p>9.2 使用</p>
+<pre><code>Release r;
+r.version.tag = &quot;v1.0.0&quot;;
+r.url = &quot;https://example.com/v1.0.0.zip&quot;;
+
+Version v = { &quot;v2.0.0&quot;, 2 };
+Release r2 = { v, &quot;https://example.com/v2.zip&quot; };
+Release r3 = { { &quot;v3.0.0&quot;, 3 }, &quot;https://example.com/v3.zip&quot; };  // 嵌套字面量</code></pre>
+<hr />
+<p>10. 引用</p>
+<p>10.1 基本用法</p>
+<pre><code>number x = 10;
+number&amp; r = x;             // r 绑定 x
+r = 20;                    // x 也变成 20</code></pre>
+<p>10.2 规则</p>
+<ul>
+<li>声明时必须初始化，右侧必须是左值</li>
+<li>绑定后不可重绑</li>
+<li>支持类型：number&amp; string&amp; bool&amp; auto&amp; struct&amp; deque&lt;T&gt;&amp; set&lt;T&gt;&amp; map&lt;K,V&gt;&amp;</li>
+<li>不支持：引用返回值、引用引用、const T&amp;、数组引用、容器组引用</li>
+<li>number&amp; r2 = 5; → E33</li>
+</ul>
+<p>10.3 delete 引用</p>
+<pre><code>delete r;                  // 只删引用，x 保留</code></pre>
+<p>10.4 引用作为参数</p>
+<pre><code>void addOne(number&amp; x) { x = x + 1; }
+void appendTo(deque&lt;string&gt;&amp; arr, string v) { arr.push_back(v); }
+void bump(map&lt;string, number&gt;&amp; m, string k) { m[k] = m[k] + 1; }</code></pre>
+<hr />
+<p>11. 输入流</p>
+<p>11.1 输入流来源优先级</p>
+<ol>
+<li>表单字段 <code>in</code>（运行页 POST，可含真实换行）</li>
+<li><code>?in=</code> 查询参数</li>
+<li>否则 POST / PUT / PATCH 的原始 body（非表单时）</li>
+<li>否则空</li>
+</ol>
+<p>11.2 ?in= 规则</p>
+<pre><code>1. 读取 ?in= 的值（URL 解码后）
+2. 若值匹配 ^https?://（大小写不敏感）
+   → 远程 GET 拉取，响应体原文作为输入流
+   → 4xx/5xx → E50；大小超 1 MB → E51；SSRF → E27
+3. 否则
+   → 值本身直接作为文本输入流（大小超 1 MB → E51）</code></pre>
+<p>示例：</p>
+<ul>
+<li><code>?in=https://example.com/data</code> → 远程全文</li>
+<li><code>?in=hello%20world</code> → <code>hello world</code></li>
+<li><code>?in=hello%0Aworld</code> → 两行（换行）</li>
+<li><code>?in=%E4%B8%AD%E6%96%87</code> → <code>中文</code></li>
+<li>运行页文本框多行 / 表单 POST → 直接保留换行</li>
+</ul>
+<p>注意：查询串里 <code>&amp;</code> 是参数分隔符，正文中的 <code>&amp;</code> 请用 <code>%26</code>。</p>
+<p>11.3 游标</p>
+<p>输入流有一个读取游标，初始在位置 0。getchar() 和 in() 共享同一个游标。</p>
+<p>11.4 getchar()</p>
+<pre><code>number c = getchar();</code></pre>
+<ul>
+<li>读到字符：返回该字符的 Unicode code point</li>
+<li>已到 EOF：返回 -1</li>
+<li>不跳过空白，不影响 in 的跳过空白行为</li>
+<li>每次调用游标前进 1</li>
+</ul>
+<p>11.5 in(x)（cin 风格）</p>
+<pre><code>1. 跳过前导空白（&#x27; &#x27; &#x27;\t&#x27; &#x27;\n&#x27; &#x27;\r&#x27;）
+2. 从当前位置读到下一个空白（或 EOF）为止，得到 token
+3. 按 x 的类型转换：
+   - number 变量：token → to_num()
+   - string 变量：token 直接赋值
+   - auto 变量：token 匹配 ^-?\d+(\.\d+)?([eE][-+]?\d+)?$ → number，否则 string
+   - bool 变量：token 非空且非 &quot;0&quot; → true，否则 false
+4. 游标停在 token 末尾</code></pre>
+<p>EOF 时 x 保持原状态（未初始化仍未初始化）。</p>
+<p>in(x) 的 x 必须是可声明的变量名，否则 E48。</p>
+<p>11.6 混合示例</p>
+<pre><code>// 输入流：&quot;42,hello,3.14&quot;
+auto main() {
+    number n;
+    string s;
+    number pi;
+
+    in(n);                  // 读到 &#x27;4&#x27; &#x27;2&#x27; 然后遇到 &#x27;,&#x27; → n = 42
+    getchar();              // 读掉逗号
+    in(s);                  // &quot;hello&quot;
+    getchar();              // 读掉逗号
+    in(pi);                 // 3.14
+
+    out(to_str(n) + &quot; &quot; + s + &quot; &quot; + to_str(pi) + &quot;\n&quot;);
+    return;
+}</code></pre>
+<hr />
+<p>12. 内置函数</p>
+<p>12.1 请求</p>
+<pre><code>string body = get(url);
+string body = post(url, requestBody);</code></pre>
+<ul>
+<li>无论服务器返回什么，get/post 永远返回 string</li>
+<li>4xx / 5xx 不终止，用 status() 判断</li>
+<li>单次请求超时 10s，响应体上限 5MB</li>
+</ul>
+<p>12.2 with 通用修饰符（含义由 with 前的函数定义：return→状态码/头/代理；get/post→param/header/UA/proxy；其它函数带 with → E52）</p>
+<p>修饰符 请求上下文 return 上下文</p>
+<p>with N ✗ E52 ✓ 状态码</p>
+<p>with param { ... } ✓ query 参数 ✗ E52</p>
+<p>with header { ... } ✓ 请求头 ✓ 响应头</p>
+<p>with UA &lt;expr&gt; ✓ User-Agent ✗ E52</p>
+<p>with proxy &lt;expr&gt; ✓ 代理前缀 ✓ 重定向 URL 前缀</p>
+<p>with { ... }（无关键字） ✓ = with param（兼容） ✗ E52</p>
+<pre><code>// 请求上下文
+get(url)
+    with param { &quot;q&quot;: &quot;abc&quot;, &quot;page&quot;: &quot;1&quot; }
+    with header { &quot;Accept&quot;: &quot;application/json&quot;, &quot;Authorization&quot;: &quot;token &quot; + key }
+    with UA &quot;Mozilla/5.0&quot;
+    with proxy &quot;https://proxy.example/&quot;;
+
+// return 上下文
+return &quot;https://github.com/a/b/releases/download/v1.0/x.zip&quot;
+    with 301
+    with header { &quot;Cache-Control&quot;: &quot;max-age=3600&quot; }
+    with proxy &quot;https://v6.gh-proxy.org/&quot;;</code></pre>
+<p>规则：</p>
+<ul>
+<li>多次 with 合并，同名后者覆盖</li>
+<li>with param/header 的 value 可以是表达式（header/param 的键名仍是字面量）</li>
+<li><strong>with 优先级</strong>低于 <code>+</code> 等二元运算：<code>return &quot;a&quot; + b with 302;</code> = <code>return (&quot;a&quot; + b) with 302;</code></li>
+<li>with 含义由前面的函数决定：get/post → param/header/UA/proxy；return → status/header/proxy；否则 E52</li>
+<li>with proxy 拼接规则：最终 URL = proxy 前缀 + 原 URL，SSRF 检查的是最终 URL</li>
+<li>响应头不允许 Location / Content-Length / Transfer-Encoding → E53</li>
+<li>多个 with proxy 后者覆盖前者</li>
+</ul>
+<p>12.3 响应信息</p>
+<pre><code>number code = status();    // 最近一次请求的 HTTP 状态码</code></pre>
+<p>12.4 JSON</p>
+<p>函数 返回 说明</p>
+<p>json_str(body, path) string 取字符串；对象/数组返回 JSON 文本；不存在 &quot;&quot;</p>
+<p>json_num(body, path) number 转数字，失败 0</p>
+<p>json_bool(body, path) bool 转 bool，失败 false</p>
+<p>json_len(body, path) number 数组/对象长度，失败 0</p>
+<p>JSONPath 子集：$.a.b、$.a[0]、$.a[*]（仅结尾）。</p>
+<p>12.5 字符串</p>
+<p>函数 返回 说明</p>
+<p>urlencode(s) string URL 编码</p>
+<p>replace(s, from, to) string 全部替换</p>
+<p>contains(s, p) / startsWith(s, p) / endsWith(s, p) bool </p>
+<p>len(s) number 字符串长度</p>
+<p>to_num(s) number 字符串转数字，失败 0</p>
+<p>to_str(x) string number/bool 转字符串</p>
+<p>regex(s, pattern) string 第一捕获组，无匹配 &quot;&quot;</p>
+<p>12.6 数学</p>
+<p>函数 返回 说明</p>
+<p>min(a, b) / max(a, b) 同类型 number 或 string（同类型）</p>
+<p>pow(base, exp) number base ^ exp</p>
+<p>rand() number [0, 1) 浮点</p>
+<p>rand(n) number [0, n) 整数</p>
+<p>ceil(x) number 向上取整</p>
+<p>floor(x) number 向下取整</p>
+<p>12.7 输入输出</p>
+<pre><code>getchar()                 // 读一个字符（code point），EOF 返回 -1
+in(x)                     // cin 风格读 token
+out(x)                    // 追加输出并实时流式推送（见 §6.4）
+q_get(&quot;name&quot;)             // URL query 参数，未传 &quot;&quot;</code></pre>
+<hr />
+<p>13. 内置变量</p>
+<p>变量 类型 来源 可修改</p>
+<p>keyword string 路径 ✗</p>
+<p>repoPath string 路径 ✗</p>
+<p>tag string 路径 ✗</p>
+<p>selector string 路径 ✗</p>
+<p>prerelease string 路径 ✗</p>
+<p>p1–p4 string 路径 ✗</p>
+<p>key string 或 deque ?key= ✗</p>
+<p>key 特殊规则（v14.2）：</p>
+<ul>
+<li>?key=普通文本 → key 为 string</li>
+<li>?key={1,&quot;abc&quot;,false} → key 为 deque（混合元素），用 key[0]、key[1]、key[2] 访问；直接写 key 等价于 key[0]</li>
+<li>元素类型按字面量推断：数字→number，true/false→bool，引号字符串→string</li>
+<li>例：?key=%7B1%2C%22abc%22%2Cfalse%7D 即 key={1,&quot;abc&quot;,false}</li>
+</ul>
+<p>URL 形式 repoPath tag selector</p>
+<p>/owner/repo/1 owner/repo latest 1</p>
+<p>/owner/repo/v1.0/linux owner/repo v1.0 linux</p>
+<p>/keyword/1 搜索得出 latest 1</p>
+<p>同名声明 → E07；修改 / delete → E49。</p>
+<hr />
+<p>14. 执行限制与错误</p>
+<p>14.1 硬限制</p>
+<p>项 上限</p>
+<p>规则大小 100 KB</p>
+<p>单次请求超时 10 s</p>
+<p>单次响应体 5 MB</p>
+<p>总 fetch 次数 20</p>
+<p>总执行时间 15 s（超时 → 504 timeout）</p>
+<p>单循环迭代 10 000</p>
+<p>递归深度 100</p>
+<p>struct 嵌套深度 8</p>
+<p>原生数组维数 4</p>
+<p>字符串长度 1 MB</p>
+<p>JSON 深度 32</p>
+<p>输出缓冲区 1 MB</p>
+<p>输入流大小 1 MB</p>
+<p>14.2 上下文清理</p>
+<p>每个请求独立执行环境。正常结束 / 出错 / 超时 → 全部变量、容器、输入流、缓冲区整体丢弃。</p>
+<p>14.3 安全</p>
+<ul>
+<li>所有 get / post / ?in= / 主函数 return 的目标都过 SSRF 检查</li>
+<li>拒绝内网 IP、非 http/https</li>
+<li>可配置 ALLOWED_DOMAINS 白名单</li>
+<li>$env_XXX 只暴露 ENV_ALLOWLIST 中的变量</li>
+</ul>
+<p>14.4 错误码</p>
+<p>码 含义</p>
+<p>E01 未闭合字符串</p>
+<p>E02 非法字符</p>
+<p>E03 缺少表达式</p>
+<p>E04 缺少分号</p>
+<p>E05 未声明变量</p>
+<p>E06 重复声明</p>
+<p>E07 覆盖内置变量</p>
+<p>E08 未知函数</p>
+<p>E09 参数个数错误</p>
+<p>E10 参数类型错误</p>
+<p>E11 未知运算符 / 类型不适用</p>
+<p>E12 break/continue 位置错误</p>
+<p>E13 return 类型不匹配</p>
+<p>E14 缺少 auto main() / main 未写 void</p>
+<p>E15 多个 main</p>
+<p>E16 编译期下标越界</p>
+<p>E17 set 使用 (n) 或 [n]</p>
+<p>E18 有返回值函数缺 return</p>
+<p>E19 容器嵌套</p>
+<p>E20 运行时类型不匹配</p>
+<p>E21 循环超限</p>
+<p>E22 递归超限</p>
+<p>E23 越界 / 空容器访问</p>
+<p>E24 fetch 次数超限</p>
+<p>E25 类型不匹配 / auto 无法推导</p>
+<p>E27 SSRF 拦截</p>
+<p>E28 脚本超时</p>
+<p>E30 对容器组 / 多维数组使用范围 for</p>
+<p>E31 对容器组改变组大小</p>
+<p>E32 原生数组调用容器方法</p>
+<p>E33 引用必须绑定左值</p>
+<p>E34 除零 / 取余零 / 位运算非整数或越界</p>
+<p>E35 对函数参数 delete</p>
+<p>E36 使用未初始化变量</p>
+<p>E40 struct 循环引用</p>
+<p>E41 不支持的 DSL 版本 / 缺少 ?url=</p>
+<p>E42 map 使用非 K 类型下标</p>
+<p>E43 main 的 return 字符串不是合法 URL</p>
+<p>E44 main 的 return 字符串 + 2xx/4xx/5xx</p>
+<p>E45 ++/-- 的操作数不是 number/bool 类型的左值</p>
+<p>E46 对右值赋值 / 自增</p>
+<p>E47 流式模式下 return &quot;url&quot;（不能重定向）</p>
+<p>E48 in(x) 的 x 不是可声明变量</p>
+<p>E49 修改 / delete 只读内置变量</p>
+<p>E50 ?in= 远程拉取 HTTP 失败</p>
+<p>E51 ?in= 或 POST body 超过 1 MB / 响应体超过 5 MB</p>
+<p>E52 with 修饰符在当前上下文无意义</p>
+<p>E53 return 响应头包含禁止的 key</p>
+<p>错误信息格式：</p>
+<pre><code>CppScript runtime error at line 8, col 12:
+    E36: use of uninitialized variable &#x27;x&#x27;
+
+snippet:
+    7 |     number x;
+    8 |     out(to_str(x));
+      |                 ^</code></pre>
+<hr />
+<p>15. 完整示例</p>
+<p>15.1 带 token 的 GitHub 请求</p>
+<pre><code>// dsl: 14
+// 访问：?url=...&amp;key=ghp_xxxxx
+
+auto main() {
+    if (key == &quot;&quot;) {
+        out(&quot;missing ?key=\n&quot;);
+        return with 401;
+    }
+
+    string body = get(&quot;https://api.github.com/repos/&quot; + repoPath + &quot;/releases/latest&quot;)
+                  with header {
+                      &quot;Accept&quot;: &quot;application/vnd.github+json&quot;,
+                      &quot;Authorization&quot;: &quot;token &quot; + key
+                  }
+                  with UA &quot;CppScript/14&quot;;
+
+    if (status() == 401) {
+        out(&quot;invalid key\n&quot;);
+        return with 401;
+    }
+    if (status() != 200) {
+        out(&quot;github error: &quot; + to_str(status()) + &quot;\n&quot;);
+        return with 502;
+    }
+
+    number n = json_len(body, &quot;$.assets&quot;);
+    for (number i = 0; i &lt; n; i++) {
+        string name = json_str(body, &quot;$.assets[&quot; + to_str(i) + &quot;].name&quot;);
+        if (contains(name, selector)) {
+            string url = json_str(body, &quot;$.assets[&quot; + to_str(i) + &quot;].browser_download_url&quot;);
+            return url with proxy &quot;https://v6.gh-proxy.org/&quot;;
+        }
+    }
+
+    out(&quot;no match\n&quot;);
+    return with 404;
+}</code></pre>
+<p>注意：这个例子调用了 out，所以会进入流式模式。如果 return url 成功，因为 out 已经触发流式，会走 E47。正确写法是把 out 从成功路径移除：</p>
+<pre><code>auto main() {
+    if (key == &quot;&quot;) {
+        return with 401;      // 无 out，走 buffer 模式
+    }
+    // ... 请求
+    return url with proxy &quot;https://v6.gh-proxy.org/&quot;;
+}</code></pre>
+<p>15.2 纯下载加速（不调 out）</p>
+<pre><code>// dsl: 14
+
+auto main() {
+    string body = get(&quot;https://api.github.com/repos/&quot; + repoPath + &quot;/releases/latest&quot;)
+                  with header { &quot;Accept&quot;: &quot;application/vnd.github+json&quot; };
+
+    if (status() != 200) {
+        return 404;
+    }
+
+    number n = json_len(body, &quot;$.assets&quot;);
+    for (number i = 0; i &lt; n; i++) {
+        string name = json_str(body, &quot;$.assets[&quot; + to_str(i) + &quot;].name&quot;);
+        if (contains(name, selector)) {
+            return json_str(body, &quot;$.assets[&quot; + to_str(i) + &quot;].browser_download_url&quot;)
+                   with proxy &quot;https://v6.gh-proxy.org/&quot;;
+        }
+    }
+    return 404;
+}</code></pre>
+<p>15.3 流式进度</p>
+<pre><code>// dsl: 14
+// 访问：?url=...
+
+auto main() {
+    out(&quot;start\n&quot;);
+
+    string body = get(&quot;https://api.example.com/releases/&quot; + repoPath);
+    out(&quot;fetched: &quot; + to_str(len(body)) + &quot; bytes\n&quot;);
+
+    number n = json_len(body, &quot;$.assets&quot;);
+    for (number i = 0; i &lt; n; i++) {
+        string name = json_str(body, &quot;$.assets[&quot; + to_str(i) + &quot;].name&quot;);
+        out(&quot;asset &quot; + to_str(i + 1) + &quot;: &quot; + name + &quot;\n&quot;);
+    }
+
+    out(&quot;done\n&quot;);
+    return;   // 关闭流
+}</code></pre>
+<p>15.4 进制转换器（流式版）</p>
+<pre><code>// dsl: 14
+// 访问：?url=...&amp;n=255&amp;base=16
+
+string DIGITS = &quot;0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;;
+
+string digitChar(number d) {
+    if (d &lt; 0 || d &gt;= 36) return &quot;?&quot;;
+    return regex(DIGITS, &quot;^.{&quot; + to_str(d) + &quot;}(.)&quot;);
+}
+
+string toBase(number n, number base) {
+    if (base &lt; 2 || base &gt; 36) return &quot;ERR_BASE&quot;;
+    if (n == 0) return &quot;0&quot;;
+    bool neg = false;
+    if (n &lt; 0) { neg = true; n = -n; }
+    number num = floor(n);
+    string result = &quot;&quot;;
+    while (num &gt; 0) {
+        number r = num % base;
+        num = floor(num / base);
+        result = digitChar(r) + result;
+    }
+    if (neg) result = &quot;-&quot; + result;
+    return result;
+}
+
+auto main() {
+    string nStr    = q_get(&quot;n&quot;);
+    string baseStr = q_get(&quot;base&quot;);
+
+    if (nStr == &quot;&quot;) {
+        out(&quot;用法: ?n=值&amp;base=目标进制\n&quot;);
+        return;
+    }
+    if (baseStr == &quot;&quot;) {
+        out(&quot;缺少 ?base=\n&quot;);
+        return;
+    }
+
+    number base = to_num(baseStr);
+    if (base &lt; 2 || base &gt; 36) {
+        out(&quot;进制必须在 2-36 之间\n&quot;);
+        return;
+    }
+
+    number value = to_num(nStr);
+    string result = toBase(value, base);
+    out(result + &quot;\n&quot;);
+    return;
+}</code></pre>
+<p>注意：这里全用 out + return;，会走流式模式（状态码 200）。</p>
+<p>15.5 输入流分析</p>
+<pre><code>// dsl: 14
+// 访问：?url=...&amp;in=https://example.com/data.txt
+
+auto main() {
+    number lines = 0;
+    number chars = 0;
+    number c = getchar();
+    while (c != -1) {
+        chars++;
+        if (c == 10) lines++;
+        c = getchar();
+    }
+    out(&quot;lines: &quot; + to_str(lines) + &quot;\n&quot;);
+    out(&quot;chars: &quot; + to_str(chars) + &quot;\n&quot;);
+    return;
+}</code></pre>
+<p>15.6 中文域名 + Onion + I2P</p>
+<pre><code>// dsl: 14
+
+auto main() {
+    string file = q_get(&quot;file&quot;);
+    if (file == &quot;&quot;) return 400;
+
+    // 全部合法，引擎自动处理
+    // return &quot;中文.example.com/下载/&quot; + file;              → https + punycode
+    // return &quot;abcdef.onion/files/&quot; + file;                 → http
+    // return &quot;xyz.i2p/download/&quot; + file;                   → http
+    // return &quot;例子.中国/&quot; + file;                            → https + punycode
+    return &quot;中文.example.com/下载/&quot; + file;
+}</code></pre>
+<p>注意：这里没有 out，走 buffer 模式，能正常 302。</p>
+<hr />
+<p>16. 常见坑</p>
+<p>坑 1：main 必须写 auto（或 void）</p>
+<pre><code>// main() { }              // ✗ E14
+auto main() { }             // ✓ 推荐
+void main() { }             // ✓ 兼容</code></pre>
+<p>坑 2：return 只返回 URL</p>
+<pre><code>// return &quot;hello&quot;;         // ✗ E43
+// return &quot;hello world&quot;;   // ✗ E43
+return &quot;example.com/a&quot;;    // ✓ 302</code></pre>
+<p>坑 3：out 和 return &quot;url&quot; 不能混用</p>
+<pre><code>auto main() {
+    out(&quot;hello\n&quot;);                          // 触发流式
+    return &quot;https://x.com/a&quot;;                // ✗ E47（流式模式不能重定向）
+}</code></pre>
+<p>正确做法：要 302 就别 out；要输出就别 return &quot;url&quot;。</p>
+<p>坑 4：流式模式状态码固定 200</p>
+<pre><code>auto main() {
+    out(&quot;error\n&quot;);
+    return with 500;        // 实际返回 200（流式已激活）
+}</code></pre>
+<p>正确做法：错误信息放 out，状态码只能是 200（流式限制）。或者不用 out，用 return with 500; 走 buffer 模式。</p>
+<p>坑 5：中文域名的点必须是半角</p>
+<pre><code>return &quot;中文.中国/x&quot;;       // ✓
+// return &quot;中文。中国/x&quot;;   // ✗ E43（全角句号）</code></pre>
+<p>坑 6：.onion / .i2p 默认补 http</p>
+<pre><code>return &quot;abc.onion/a&quot;;      // → http://abc.onion/a
+return &quot;abc.i2p/a&quot;;        // → http://abc.i2p/a</code></pre>
+<p>坑 7：in 从输入流读，不是 query</p>
+<pre><code>// v13 之前
+in(n);                    // ✗ 现在从输入流读，GET 请求下是空的
+// 正确
+number n = to_num(q_get(&quot;n&quot;));    // ✓ 从 query 读</code></pre>
+<p>坑 8：?in= 的值是 URL 还是文本</p>
+<pre><code>?in=https://example.com/data     → 远程拉取
+?in=hello%20world                → 文本 &quot;hello world&quot;
+?in=                             → 空文本</code></pre>
+<p>坑 9：位运算操作数必须整数</p>
+<pre><code>number a = 3.5;
+// a &amp; 1;                  // ✗ E34</code></pre>
+<p>坑 10：原生数组不能 push</p>
+<pre><code>number a[5];
+// a.push_back(10);        // ✗ E32</code></pre>
+<p>坑 11：a(n) vs a[n] vs T a[n] vs map</p>
+<pre><code>number arr[5];             // 原生数组，5 个 number
+deque&lt;number&gt; c(5);        // 容器，size=5，可 push/pop
+deque&lt;number&gt; g[5];        // 容器组，5 个独立空 deque
+map&lt;string, number&gt; m;     // 键值映射，空</code></pre>
+<p>坑 12：map 下标不存在的 key 返回默认值</p>
+<pre><code>map&lt;string, number&gt; m;
+m[&quot;x&quot;] = 10;
+out(to_str(m[&quot;y&quot;]));       // 0（不存在返回 V 默认值，不插入）</code></pre>
+<p>坑 13：struct 不能循环引用</p>
+<pre><code>struct A { number x; };
+struct B { A a; };         // ✓ 单向嵌套
+// struct S { S inner; };  // ✗ E40（自引用）</code></pre>
+<p>坑 14：未初始化变量读 → E36</p>
+<pre><code>number x;
+// out(to_str(x));         // ✗ E36
+x = 5;
+out(to_str(x));            // ✓</code></pre>
+<p>坑 15：auto 不能推 bool</p>
+<pre><code>// auto ok = true;         // ✗ E25
+bool ok = true;            // ✓</code></pre>
+<p>坑 16：除法是浮点</p>
+<pre><code>out(to_str(7 / 2));        // &quot;3.5&quot;
+out(to_str(floor(7 / 2))); // &quot;3&quot;</code></pre>
+<p>坑 17：容器组 / 多维数组不能范围 for</p>
+<pre><code>deque&lt;number&gt; g[3];
+// for (auto x in g) { }   // ✗ E30
+for (number i = 0; i &lt; g.size(); i++) {
+    for (auto x in g[i]) { }  // ✓ 内层是单容器
+}</code></pre>
+<p>坑 18：map 遍历迭代变量是 key</p>
+<pre><code>map&lt;string, number&gt; m = { &quot;a&quot;: 1, &quot;b&quot;: 2 };
+for (string k in m) {
+    out(k + &quot; = &quot; + to_str(m[k]) + &quot;\n&quot;);
+}</code></pre>
+<p>坑 19：右移是算术右移</p>
+<pre><code>number x = -12;
+out(to_str(x &gt;&gt; 1));       // -6</code></pre>
+<p>坑 20：++i 返回引用，i++ 返回副本</p>
+<pre><code>number i = 5;
+++(++i);                   // ✓ i = 7
+// (i++)++;                // ✗ E45
+(++i) = 100;               // ✓ i = 100</code></pre>
+<p>坑 21：bool 的 ++ / -- 是取反</p>
+<pre><code>bool b = true;
+b++;                       // b = false</code></pre>
+<p>坑 22：key 不可修改；花括号形式为 deque</p>
+<pre><code>// key = &quot;new&quot;;            // ✗ E49
+if (key == &quot;&quot;) { ... }     // ✓ 读取（字符串形式）
+// ?key={1,&quot;abc&quot;,false}
+// 直接写 key 等价于 key[0]；下标用 key[1]、key[2]
+// 关键字 UA/with/string 等不能当变量名 → E03</code></pre>
+<p>坑 26：不要用关键字当变量名</p>
+<pre><code>// string UA = &quot;Mozilla&quot;;           // ✗ E03
+string userAgent = &quot;Mozilla&quot;;       // ✓
+get(url) with UA userAgent;         // ✓</code></pre>
+<p>坑 27：in 换行要用编码或表单</p>
+<pre><code>// URL:  ?in=line1%0Aline2
+// 页面：文本框直接回车，再点「运行」</code></pre>
+<p>坑 23：with proxy 不叠加</p>
+<pre><code>get(url) with proxy &quot;https://a.com/&quot; with proxy &quot;https://b.com/&quot;
+// 最终用 b.com</code></pre>
+<p>坑 24：响应头不能写保留字段</p>
+<pre><code>// return &quot;url&quot; with 302 with header { &quot;Location&quot;: &quot;x&quot; };  // ✗ E53</code></pre>
+<p>坑 25：规则文件不要求 .txt 扩展名</p>
+<pre><code>?url=https://example.com/rule          ✓ 合法
+?url=https://example.com/rule.txt      ✓ 合法
+?url=https://example.com/rule.json     ✓ 合法（内容会被当文本解析）</code></pre>
+<hr />
+<p>附录：版本演化</p>
+<p>版本 主要变化</p>
+<p>v1–v8 基础设计：类型、容器、struct、引用、内置函数</p>
+<p>v9 位运算、原生多维数组、auto main()、命名 CppScript</p>
+<p>v10 HTTPS 优先、中文域名、版本默认最新、map、struct 嵌套</p>
+<p>v11 return 只返回 URL、out 输出 body、.onion / .i2p 补 http、E43/E44</p>
+<p>v12.1 ++ / -- / 复合赋值，和 C++ 一致（返回左值引用）</p>
+<p>v12.2 bool 的 ++ / -- = 取反；bool 复合赋值先转 number 再转回</p>
+<p>v13 输入流、getchar、in 改为 cin 风格</p>
+<p>v13.2 ?txtin= 输入流来源（URL 或文本）</p>
+<p>v14 key 只读变量、with 通用修饰符（param/header/UA/proxy/status）</p>
+<p>v14.1 ?txturl= → ?url=（不要求 .txt）；?txtin= → ?in=；out 输出缓冲后整页返回（避免流式空 body）</p>
+<p>v14.2 修复 AST type 字段冲突；main 改为 auto main；key 花括号下标；with 整式绑定；关键字禁作变量名；按需 in/key 表单；out 结果整页缓冲返回（修复点运行白屏）</p>
+<hr />
+<p>CppScript v14.2 · 2026-10</p>
+<hr />
+<p class="meta">CppScript v14.2 · 2026-10 · 文档已同步：按需 key/in 表单、无缝运行、q_get(&quot;key&quot;) 检测</p>
+</div>
+</body>
+</html>

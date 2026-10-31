@@ -1,0 +1,7 @@
+name = "cppscript"
+main = "src/index.js"
+compatibility_date = "2026-10-25"
+
+# 可选：环境变量（非敏感配置）
+[vars]
+CONFIG_TTL = "300"
