@@ -1,0 +1,7 @@
+name = "shortlinks"
+main = "worker.js"
+compatibility_date = "2026-10-26"
+
+[[kv_namespaces]]
+binding = "SHORTLINKS_KV"
+id = "fd2148fe4ebf487189f886f1a2d0922c"

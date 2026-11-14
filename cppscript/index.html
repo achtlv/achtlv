@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="light dark" />
+<title>CppScript</title>
+<style>
+:root {
+  color-scheme: light dark;
+  --bg: #f6f8fb; --panel: #ffffff; --text: #1a2332; --muted: #5a6a82;
+  --accent: #2563eb; --code-bg: #eef2f7; --border: #d0d7e2;
+  --ok: #15803d; --err: #b91c1c;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1419; --panel: #1a2332; --text: #e7ecf3; --muted: #8b9bb4;
+    --accent: #3d8bfd; --code-bg: #0b1220; --border: #2a3548;
+    --ok: #3dd68c; --err: #f87171;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg); color: var(--text); line-height: 1.55;
+}
+body.modal-open { overflow: hidden; touch-action: none; }
+.wrap { max-width: 960px; margin: 0 auto; padding: 1.25rem 1rem 3rem; }
+header {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 1rem;
+  margin-bottom: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border);
+}
+header h1 { font-size: 1.2rem; margin: 0; font-weight: 650; }
+.meta { color: var(--muted); font-size: 0.85rem; }
+.card {
+  background: var(--panel); border: 1px solid var(--border);
+  border-radius: 10px; padding: 0.85rem 1rem; margin-bottom: 0.85rem;
+}
+.card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 0.5rem; margin-bottom: 0.5rem;
+}
+.card h2 {
+  font-size: 0.8rem; margin: 0; color: var(--muted);
+  font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;
+}
+textarea, input[type=text], input[type=url] {
+  width: 100%;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.88rem;
+  background: var(--code-bg); color: var(--text);
+  border: 1px solid var(--border); border-radius: 8px; padding: 0.65rem 0.8rem;
+}
+textarea.code { min-height: 180px; resize: vertical; line-height: 1.45; }
+textarea.out { min-height: 160px; resize: vertical; white-space: pre-wrap; }
+.row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-top: 0.6rem; }
+button {
+  cursor: pointer; background: var(--accent); color: #fff; border: none;
+  border-radius: 8px; padding: 0.5rem 1rem; font-size: 0.9rem; font-weight: 600;
+}
+button:disabled { opacity: 0.55; cursor: not-allowed; }
+button.secondary {
+  background: transparent; color: var(--accent); border: 1px solid var(--border);
+}
+.badge {
+  display: inline-block; font-size: 0.75rem; padding: 0.15rem 0.5rem;
+  border-radius: 999px; border: 1px solid var(--border); color: var(--muted);
+}
+.badge.ok { color: var(--ok); border-color: var(--ok); }
+.badge.err { color: var(--err); border-color: var(--err); }
+.badge.wait { color: var(--accent); border-color: var(--accent); }
+.hint { color: var(--muted); font-size: 0.78rem; margin-top: 0.35rem; }
+.foot { margin-top: 1rem; color: var(--muted); font-size: 0.8rem; }
+a { color: var(--accent); }
+.tabs { display: flex; gap: 0.35rem; margin-bottom: 0.5rem; }
+.tabs button {
+  background: transparent; color: var(--muted); border: 1px solid var(--border);
+  font-weight: 500; padding: 0.35rem 0.75rem;
+}
+.tabs button.active { color: var(--accent); border-color: var(--accent); }
+[hidden] { display: none !important; }
+#btnStopBar { margin-bottom: 0.85rem; }
+#btnStop { width: 100%; background: #b91c1c; padding: 0.65rem 1rem; }
+@media (prefers-color-scheme: dark) { #btnStop { background: #dc2626; } }
+.out-head { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.5rem; }
+.out-head h2 { margin: 0; }
+.out-head button { padding: 0.25rem 0.6rem; font-size: 0.78rem; }
+.modal-mask {
+  position: fixed; inset: 0; background: rgba(0,0,0,.45);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999; padding: 1rem; overflow: hidden;
+}
+.modal {
+  background: var(--panel); color: var(--text);
+  border: 1px solid var(--border); border-radius: 12px;
+  max-width: 480px; width: 100%; padding: 1rem 1.1rem;
+  box-shadow: 0 12px 40px rgba(0,0,0,.25);
+}
+.modal h3 { margin: 0 0 0.5rem; font-size: 1rem; }
+.modal .url {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-family: ui-monospace, monospace; font-size: 0.85rem;
+  background: var(--code-bg); border: 1px solid var(--border);
+  border-radius: 8px; padding: 0.6rem 0.75rem; margin: 0.5rem 0 0.85rem;
+}
+.modal .msg { margin: 0.5rem 0 0.85rem; white-space: pre-wrap; word-break: break-word; }
+.modal .actions { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: flex-end; }
+.modal .actions button { font-size: 0.85rem; }
+.modal .actions .secondary { background: transparent; color: var(--accent); border: 1px solid var(--border); }
+.toast {
+  position: fixed; left: 50%; bottom: 1.5rem; transform: translateX(-50%);
+  background: var(--panel); border: 1px solid var(--ok); color: var(--ok);
+  padding: 0.55rem 1rem; border-radius: 999px; font-size: 0.9rem; font-weight: 600;
+  z-index: 10000; box-shadow: 0 8px 24px rgba(0,0,0,.2);
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>CppScript</h1>
+    <span class="badge" id="status">就绪</span>
+    
+  </header>
+
+  <!-- 1. 代码框（未运行显示，运行中隐藏） -->
+  <div class="card" id="cardRule">
+    <div class="card-head">
+      <h2>代码</h2>
+      <button type="button" id="btnRun">运行</button>
+    </div>
+    <div class="tabs">
+      <button type="button" class="active" id="tabCode">编辑器</button>
+      <button type="button" id="tabUrl">URL</button>
+    </div>
+    <div id="paneCode">
+      <textarea class="code" id="code" spellcheck="false" placeholder="auto main() { ... }"></textarea>
+    </div>
+    <div id="paneUrl" hidden>
+      <input type="url" id="ruleUrl" placeholder="https://.../rule.cpps" />
+      <div class="row">
+        <button type="button" class="secondary" id="btnLoad">加载到编辑器</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. 输出 -->
+  <div class="card" id="cardOut" hidden>
+    <div class="out-head">
+      <h2>输出</h2>
+      <button type="button" class="secondary" id="btnClearOut">清空输出</button>
+    </div>
+    <textarea class="out" id="out" readonly></textarea>
+  </div>
+
+  <!-- 3. 强行停止（运行中显示） -->
+  <div id="btnStopBar" hidden>
+    <button type="button" id="btnStop">强行停止</button>
+  </div>
+
+  <!-- 4. 标准输入 -->
+  <div class="card" id="cardIn" hidden>
+    <h2>输入</h2>
+    <div class="row">
+      <input type="text" id="lineIn" placeholder="一行后 Enter" style="flex:1;min-width:160px" disabled />
+      <button type="button" id="btnDone" disabled>完成</button>
+    </div>
+    <p class="hint" id="inHint"></p>
+  </div>
+
+  <!-- 5. key -->
+  <div class="card" id="cardKey" hidden>
+    <h2>key</h2>
+    <textarea id="key" rows="3" placeholder='1, "a", true'></textarea>
+  </div>
+
+  <!-- 6. query -->
+  <div class="card" id="cardQuery" hidden>
+    <h2>query</h2>
+    <textarea id="queryBox" rows="4" placeholder="a=1&#10;b=hello"></textarea>
+  </div>
+
+  <div id="paramConfirmBar" hidden style="margin-bottom:0.85rem">
+    <button type="button" id="btnParamConfirm" style="width:100%">确认并运行</button>
+  </div>
+
+  <p class="foot"><a href="./docs/">文档</a></p>
+</div>
+
+<div class="modal-mask" id="appModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <h3 id="modalTitle">提示</h3>
+    <div class="url" id="modalUrl" hidden></div>
+    <div class="msg" id="modalMsg" hidden></div>
+    <div class="actions" id="modalActions"></div>
+  </div>
+</div>
+
+<script type="module">
+import { parse } from './src/parser.js';
+import { Interpreter } from './src/interpreter.js';
+import { InteractiveInputStream, InputStream } from './src/input.js';
+import { ensureHttps } from './src/request.js';
+
+const $ = (id) => document.getElementById(id);
+const statusEl = $('status');
+const outEl = $('out');
+const codeEl = $('code');
+const lineIn = $('lineIn');
+const btnDone = $('btnDone');
+const inHint = $('inHint');
+const cardRule = $('cardRule');
+const cardKey = $('cardKey');
+const cardQuery = $('cardQuery');
+const cardIn = $('cardIn');
+const cardOut = $('cardOut');
+const queryBox = $('queryBox');
+const btnRun = $('btnRun');
+const btnStop = $('btnStop');
+const btnStopBar = $('btnStopBar');
+const ruleUrlEl = $('ruleUrl');
+
+const DEMO = `auto main() {
+    out("name?\\n");
+    string name;
+    in(name);
+    out("hello, ");
+    out(name);
+    out("\\n");
+    return;
+}
+`;
+
+function setStatus(text, kind) {
+  statusEl.textContent = text;
+  statusEl.className = 'badge' + (
+    kind === 'err' || kind === true ? ' err'
+    : kind === 'wait' ? ' wait'
+    : kind === 'ok' || kind === false ? ' ok' : ''
+  );
+}
+
+function showToast(text) {
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = text;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1800);
+}
+
+function lockScroll(on) {
+  document.body.classList.toggle('modal-open', !!on);
+}
+
+function openModal({ title, url, message, buttons }) {
+  return new Promise((resolve) => {
+    const mask = $('appModal');
+    $('modalTitle').textContent = title || '提示';
+    const urlEl = $('modalUrl');
+    const msgEl = $('modalMsg');
+    const actions = $('modalActions');
+    actions.innerHTML = '';
+    if (url) {
+      urlEl.hidden = false;
+      urlEl.textContent = url;
+      urlEl.title = url;
+    } else urlEl.hidden = true;
+    if (message) {
+      msgEl.hidden = false;
+      msgEl.textContent = message;
+    } else msgEl.hidden = true;
+    const close = (val) => {
+      mask.hidden = true;
+      lockScroll(false);
+      resolve(val);
+    };
+    for (const b of buttons) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = b.label;
+      if (b.secondary) btn.className = 'secondary';
+      btn.onclick = async () => {
+        if (b.onClick) await b.onClick();
+        if (b.keepOpen) return;
+        close(b.value);
+      };
+      actions.appendChild(btn);
+    }
+    mask.hidden = false;
+    lockScroll(true);
+  });
+}
+
+function showModalConfirm(message) {
+  return openModal({
+    title: '确认',
+    message: String(message ?? ''),
+    buttons: [
+      { label: '取消', secondary: true, value: false },
+      { label: '确定', value: true },
+    ],
+  });
+}
+
+function openRedirectModal(url) {
+  return openModal({
+    title: '确认跳转',
+    url,
+    buttons: [
+      {
+        label: '复制链接',
+        secondary: true,
+        keepOpen: true,
+        onClick: async () => {
+          try {
+            await navigator.clipboard.writeText(url);
+            showToast('已复制');
+          } catch {
+            const ta = document.createElement('textarea');
+            ta.value = url;
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); showToast('已复制'); } catch (_) {}
+            ta.remove();
+          }
+        },
+      },
+      { label: '取消', secondary: true, value: false },
+      { label: '确认跳转', value: true },
+    ],
+  }).then((go) => {
+    if (go) location.href = url;
+    return go;
+  });
+}
+
+
+function analyzeKeyQuery(ast) {
+  let needsKey = false, needsQuery = false;
+  const Q_BUILTINS = new Set(['keyword', 'repoPath', 'tag', 'selector', 'prerelease', 'p1', 'p2', 'p3', 'p4']);
+  const walk = (n) => {
+    if (!n || typeof n !== 'object') return;
+    if (Array.isArray(n)) { n.forEach(walk); return; }
+    if (n.type === 'Ident') {
+      if (n.name === 'key') needsKey = true;
+      if (Q_BUILTINS.has(n.name)) needsQuery = true;
+    }
+    if (n.type === 'Call' && n.callee && n.callee.type === 'Ident' && n.callee.name === 'q_get') {
+      const a0 = n.args && n.args[0];
+      if (a0 && a0.type === 'String' && a0.value === 'key') needsKey = true;
+      else needsQuery = true;
+    }
+    for (const k of Object.keys(n)) {
+      if (k === 'type') continue;
+      walk(n[k]);
+    }
+  };
+  walk(ast);
+  return { needsKey, needsQuery };
+}
+
+function isReservedKeyName(name) {
+  return name === 'key' || /^key\d+$/.test(name);
+}
+
+function parseQueryBoxText(text) {
+  const map = Object.create(null);
+  const raw = String(text || '');
+  const segments = [];
+  let i = 0;
+  let cur = '';
+  const isSep2 = (c) => c === ',' || c === ';' || c === ' ' || c === '\t' || c === '\n' || c === '\r';
+  while (i < raw.length) {
+    const c = raw[i];
+    if (c === '"' || c === "'") {
+      const q = c;
+      cur += c;
+      i++;
+      while (i < raw.length && raw[i] !== q) {
+        if (raw[i] === '\\' && i + 1 < raw.length) { cur += raw[i] + raw[i + 1]; i += 2; }
+        else { cur += raw[i++]; }
+      }
+      if (i < raw.length) cur += raw[i++];
+      continue;
+    }
+    if (isSep2(c)) {
+      if (cur.trim()) segments.push(cur.trim());
+      cur = '';
+      while (i < raw.length && isSep2(raw[i])) i++;
+      continue;
+    }
+    cur += c;
+    i++;
+  }
+  if (cur.trim()) segments.push(cur.trim());
+  for (const seg of segments) {
+    if (seg.startsWith('#')) continue;
+    const eq = seg.indexOf('=');
+    if (eq <= 0) continue;
+    const k = seg.slice(0, eq).trim();
+    let v = seg.slice(eq + 1).trim();
+    if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) v = v.slice(1, -1);
+    if (!k || isReservedKeyName(k)) continue;
+    map[k] = v;
+  }
+  return map;
+}
+
+function getLiveQueryParam(name) {
+  if (name === 'key') return $('key').value || '';
+  const box = parseQueryBoxText(queryBox.value);
+  if (Object.prototype.hasOwnProperty.call(box, name)) return box[name];
+  try {
+    const u = new URL(location.href);
+    if (u.searchParams.has(name)) return u.searchParams.get(name) || '';
+  } catch (_) {}
+  return '';
+}
+
+function setUrlParam(key, value, removeIfEmpty = true) {
+  try {
+    const u = new URL(location.href);
+    if (value == null || value === '') {
+      if (removeIfEmpty) u.searchParams.delete(key);
+    } else {
+      u.searchParams.set(key, value);
+    }
+    history.replaceState(null, '', u);
+  } catch (_) {}
+}
+
+function hideRuntimePanels() {
+  cardKey.hidden = true;
+  cardQuery.hidden = true;
+  cardIn.hidden = true;
+  $('paramConfirmBar').hidden = true;
+}
+
+/** 保存 URL 页内容到地址栏参数（不刷新） */
+function saveUrlFromBox() {
+  let u = ruleUrlEl.value.trim();
+  if (!u) {
+    setUrlParam('url', '');
+    return '';
+  }
+  u = ensureHttps(u);
+  ruleUrlEl.value = u;
+  setUrlParam('url', u);
+  return u;
+}
+
+function showTab(name, { fromUser = false } = {}) {
+  const isCode = name === 'code';
+  if (isCode && fromUser) {
+    const box = ruleUrlEl.value.trim();
+    const param = new URL(location.href).searchParams.get('url');
+    if (box || param) {
+      const u = saveUrlFromBox() || (param ? ensureHttps(param) : '');
+      if (u && !codeEl.value.trim()) {
+        loadRule(u).catch(() => {});
+      }
+    }
+  }
+  $('tabCode').classList.toggle('active', isCode);
+  $('tabUrl').classList.toggle('active', !isCode);
+  $('paneCode').hidden = !isCode;
+  $('paneUrl').hidden = isCode;
+}
+
+$('tabCode').onclick = () => showTab('code', { fromUser: true });
+$('tabUrl').onclick = () => showTab('url', { fromUser: true });
+
+async function loadRule(url) {
+  const fixed = ensureHttps(url);
+  setStatus('加载规则…', 'wait');
+  const res = await fetch(fixed);
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  codeEl.value = await res.text();
+  setStatus('已加载', 'ok');
+  return fixed;
+}
+
+$('btnLoad').onclick = async () => {
+  let u = ruleUrlEl.value.trim();
+  if (!u) return alert('请填写规则 URL');
+  u = ensureHttps(u);
+  ruleUrlEl.value = u;
+  try {
+    await loadRule(u);
+    setUrlParam('url', u);
+    showTab('code');
+    hideRuntimePanels();
+    cardOut.hidden = true;
+  } catch (e) {
+    setStatus('加载失败: ' + e.message, 'err');
+  }
+};
+
+$('btnClearOut').onclick = () => {
+  outEl.value = '';
+  cardOut.hidden = true;
+};
+
+let codeEditTimer = null;
+codeEl.addEventListener('input', () => {
+  clearTimeout(codeEditTimer);
+  codeEditTimer = setTimeout(() => {
+    setUrlParam('url', '');
+    ruleUrlEl.value = '';
+  }, 200);
+});
+
+let stream = null;
+let running = false;
+let pendingRun = null; // { src, options }
+
+function setInputEnabled(on) {
+  lineIn.disabled = !on;
+  btnDone.disabled = !on;
+  inHint.textContent = on ? 'Enter 提交一行；完成 = EOF' : '';
+  if (on) lineIn.focus();
+}
+
+function submitLine() {
+  if (!stream || lineIn.disabled) return;
+  stream.pushLine(lineIn.value);
+  lineIn.value = '';
+}
+lineIn.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); submitLine(); }
+});
+btnDone.addEventListener('click', () => {
+  if (!stream) return;
+  if (lineIn.value !== '') {
+    stream.pushLine(lineIn.value);
+    lineIn.value = '';
+  }
+  stream.finish();
+  setInputEnabled(false);
+  inHint.textContent = '输入已结束';
+});
+
+function fetchViaEnv() {
+  try { return location.origin + '/api/fetch?target='; } catch { return ''; }
+}
+
+function setRunningUI(on) {
+  if (on) {
+    cardRule.hidden = true;
+    btnStopBar.hidden = false;
+    btnStop.disabled = false;
+  } else {
+    cardRule.hidden = false;
+    btnStopBar.hidden = true;
+    btnStop.disabled = true;
+    btnRun.disabled = false;
+    btnRun.textContent = '运行';
+  }
+}
+
+function hasKeyParam() {
+  try {
+    if (new URL(location.href).searchParams.has('key')) return true;
+  } catch (_) {}
+  // 输入框有内容也算已提供（含故意留空时用户会点确认）
+  return false;
+}
+
+function hasQueryParams() {
+  const box = queryBox.value.trim();
+  if (box) return true;
+  try {
+    const u = new URL(location.href);
+    const skip = new Set(['url', 'key', 'in', 'run', 'server']);
+    for (const k of u.searchParams.keys()) {
+      if (!skip.has(k)) return true;
+    }
+  } catch (_) {}
+  return false;
+}
+
+/** 运行前：key/query 不齐则先展示并等确认 */
+function preflightKeyQuery(ast) {
+  const { needsKey, needsQuery } = analyzeKeyQuery(ast);
+  cardKey.hidden = true;
+  cardQuery.hidden = true;
+  $('paramConfirmBar').hidden = true;
+
+  let needConfirm = false;
+  const url = new URL(location.href);
+
+  if (needsKey) {
+    if (url.searchParams.has('key')) {
+      $('key').value = url.searchParams.get('key') || '';
+    } else {
+      cardKey.hidden = false;
+      needConfirm = true;
+    }
+  }
+  if (needsQuery) {
+    if (!hasQueryParams()) {
+      cardQuery.hidden = false;
+      needConfirm = true;
+    }
+  }
+  if (needConfirm) {
+    $('paramConfirmBar').hidden = false;
+  }
+  return needConfirm;
+}
+
+function pageUrlHasPrefillKey() {
+  try { return new URL(location.href).searchParams.has('key'); } catch { return false; }
+}
+
+async function runCode(src, options = {}) {
+  if (running) return;
+  if (!src || !src.trim()) {
+    alert('请输入源代码或加载规则');
+    return;
+  }
+
+  outEl.value = '';
+  running = true;
+  setRunningUI(true);
+  setStatus('运行中…', 'wait');
+  hideRuntimePanels();
+  cardOut.hidden = true; // 绝不预开；只有真正 out 时才开
+
+  const abortCtl = new AbortController();
+  window.__cppsAbort = abortCtl;
+
+  let ast;
+  try {
+    ast = parse(src);
+  } catch (e) {
+    cardOut.hidden = false;
+    outEl.value = '[error] ' + (e.message || e);
+    setStatus('解析错误', 'err');
+    running = false;
+    window.__cppsAbort = null;
+    setRunningUI(false);
+    return;
+  }
+
+  // 输入流：始终 Interactive，真正 in 时再显示框
+  stream = new InteractiveInputStream(options.prefillIn || '');
+  setInputEnabled(false);
+  abortCtl.signal.addEventListener('abort', () => {
+    try {
+      if (stream && stream.abort) stream.abort();
+      else if (stream) stream.finish();
+    } catch (_) {}
+  });
+
+  const keyVal = $('key').value || '';
+  const fake = new URL('https://local.cppscript/run');
+  // 支持逗号/换行多 key → 使用 key0,key1... 优先于 key
+  const keyParts = keyVal.split(/[\n,\s]+/).map(s => s.trim()).filter(s => s !== '');
+  if (keyParts.length > 1) {
+    keyParts.forEach((v, i) => fake.searchParams.set('key' + i, v.replace(/^["']|["']$/g, '')));
+  } else if (keyVal !== '') {
+    fake.searchParams.set('key', keyVal);
+  }
+  try {
+    const u = new URL(location.href);
+    [...u.searchParams.keys()].filter(k => k === 'key' || /^key\d+$/.test(k)).forEach(k => u.searchParams.delete(k));
+    if (keyParts.length > 1) keyParts.forEach((v, i) => u.searchParams.set('key' + i, v));
+    else if (keyVal !== '') u.searchParams.set('key', keyVal);
+    history.replaceState(null, '', u);
+  } catch (_) {}
+  // query box
+  // query box → address bar
+  const qmap = parseQueryBoxText(queryBox.value);
+  try {
+    const u = new URL(location.href);
+    for (const [k, v] of Object.entries(qmap)) u.searchParams.set(k, v);
+    history.replaceState(null, '', u);
+  } catch (_) {}
+
+  let hadStreamOut = false;
+  try {
+    const interp = new Interpreter(ast, {
+      url: fake,
+      env: { FETCH_VIA: fetchViaEnv() },
+      inputStream: stream,
+      getQueryParam: getLiveQueryParam,
+      abortSignal: abortCtl.signal,
+      showModal: showModalConfirm,
+      onNeedInput: () => {
+        cardIn.hidden = false;
+        setInputEnabled(true);
+      },
+      onChunk: (delta) => {
+        hadStreamOut = true;
+        if (cardOut.hidden) cardOut.hidden = false;
+        outEl.value += delta;
+        outEl.scrollTop = outEl.scrollHeight;
+      },
+    });
+
+    const result = await interp.run();
+    if (interp.output && interp.output.length) {
+      hadStreamOut = true;
+      if (cardOut.hidden) cardOut.hidden = false;
+      if (!outEl.value) outEl.value = interp.output;
+    }
+
+    if (result && result.redirect && result.url) {
+      // 跳转不算输出：无 out 则不显示输出框
+      if (hadStreamOut) {
+        outEl.value += (outEl.value && !outEl.value.endsWith('\n') ? '\n' : '') +
+          '[redirect' + ((result.redirectMode || 'auto') === 'confirm' ? '·确认' : '') + '] ' + result.url;
+      } else {
+        cardOut.hidden = true;
+        outEl.value = '';
+      }
+      setStatus('完成 · 跳转', 'ok');
+      showToast('运行完成');
+      if ((result.redirectMode || 'auto') === 'confirm') {
+        await openRedirectModal(result.url); // 无延迟
+      } else {
+        setTimeout(() => { location.href = result.url; }, 1500);
+      }
+    } else {
+      setStatus('完成 ' + ((result && result.status) || 200), 'ok');
+      showToast('运行完成');
+    }
+  } catch (e) {
+    const msg = (e && e.message) ? e.message : String(e);
+    const code = e && e.code;
+    // 强行停止：视为运行完成
+    if (code === 'E60' || /abort/i.test(msg)) {
+      setStatus('完成', 'ok');
+      showToast('运行完成');
+    } else {
+      if (cardOut.hidden) cardOut.hidden = false;
+      outEl.value += (outEl.value ? '\n' : '') + '[error] ' + msg;
+      setStatus('错误', 'err');
+    }
+  } finally {
+    running = false;
+    window.__cppsAbort = null;
+    setRunningUI(false);
+    setInputEnabled(false);
+    stream = null;
+    hideRuntimePanels();
+    inHint.textContent = '';
+  }
+}
+
+async function startRunPipeline(src, options = {}) {
+  // 解析并检查 key/query
+  let ast;
+  try {
+    ast = parse(src);
+  } catch (e) {
+    cardOut.hidden = false;
+    outEl.value = '[error] ' + (e.message || e);
+    setStatus('解析错误', 'err');
+    return;
+  }
+  const needConfirm = preflightKeyQuery(ast);
+  if (needConfirm) {
+    pendingRun = { src, options };
+    setStatus('请确认 key / query 后点「确认并运行」', 'wait');
+    return;
+  }
+  pendingRun = null;
+  await runCode(src, options);
+}
+
+$('btnParamConfirm').onclick = async () => {
+  if (!pendingRun) return;
+  const job = pendingRun;
+  pendingRun = null;
+  $('paramConfirmBar').hidden = true;
+  // 同步参数到地址栏
+  if (!cardKey.hidden) setUrlParam('key', $('key').value || '', false);
+  if (!cardQuery.hidden) {
+    const qmap = parseQueryBoxText(queryBox.value);
+    try {
+      const u = new URL(location.href);
+      for (const [k, v] of Object.entries(qmap)) u.searchParams.set(k, v);
+      history.replaceState(null, '', u);
+    } catch (_) {}
+  }
+  await runCode(job.src, job.options);
+};
+
+/** 运行入口：若在 URL 页则先保存参数并加载源码 */
+async function onRunClick() {
+  if (running) return;
+  const onUrlTab = !$('paneUrl').hidden;
+  if (onUrlTab) {
+    const u = saveUrlFromBox();
+    if (!u) {
+      alert('请填写规则 URL');
+      return;
+    }
+    try {
+      await loadRule(u);
+    } catch (e) {
+      setStatus('加载失败: ' + e.message, 'err');
+      return;
+    }
+  }
+  await startRunPipeline(codeEl.value);
+}
+
+btnStop.onclick = () => {
+  const ctl = window.__cppsAbort;
+  if (!ctl) return;
+  try { ctl.abort(); } catch (_) {}
+  if (stream && typeof stream.abort === 'function') {
+    try { stream.abort(); } catch (_) {}
+  } else if (stream && typeof stream.finish === 'function') {
+    try { stream.finish(); } catch (_) {}
+  }
+  setStatus('完成', 'ok');
+  showToast('运行完成');
+  // 立即恢复 UI（解释器会随后结束）
+  running = false;
+  window.__cppsAbort = null;
+  setRunningUI(false);
+  setInputEnabled(false);
+  hideRuntimePanels();
+  cardOut.hidden = true;
+  outEl.value = '';
+  inHint.textContent = '';
+  stream = null;
+};
+
+btnRun.onclick = () => onRunClick();
+
+// ---------- boot ----------
+const pageUrl = new URL(location.href);
+if (pageUrl.searchParams.has('key')) $('key').value = pageUrl.searchParams.get('key') || '';
+{
+  const skip = new Set(['url', 'key', 'in', 'run', 'server']);
+  const lines = [];
+  for (const [k, v] of pageUrl.searchParams.entries()) {
+    if (skip.has(k)) continue;
+    lines.push(k + '=' + v);
+  }
+  if (lines.length) queryBox.value = lines.join('\n');
+}
+
+const preload = pageUrl.searchParams.get('url');
+if (preload) {
+  const fixed = ensureHttps(preload);
+  ruleUrlEl.value = fixed;
+  if (fixed !== preload) setUrlParam('url', fixed);
+  // 有 url 参数：默认停在 URL 页，不自动切编辑器
+  showTab('url');
+  (async () => {
+    try {
+      await loadRule(fixed);
+      // 仍停在 URL 页；用户点编辑器才会切换并保存
+      await startRunPipeline(codeEl.value, { prefillIn: pageUrl.searchParams.get('in') || '' });
+    } catch (e) {
+      setStatus('加载失败: ' + e.message, 'err');
+    }
+  })();
+} else {
+  showTab('code');
+  if (!codeEl.value) codeEl.value = DEMO;
+}
+</script>
+</body>
+</html>
