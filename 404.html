@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Redirecting...</title>
+  <script>
+    (function () {
+      // ★ 通过 gh-proxy 获取 domain.txt，避免直连 GitHub
+      var DOMAIN_URL = 'https://v6.gh-proxy.org/https://raw.githubusercontent.com/achtlv/achtlv/main/domain.txt';
+
+      function doRedirect(baseDomain) {
+        var path = window.location.pathname;
+        var search = window.location.search;
+        var hash = window.location.hash;
+
+        var routes = {
+          '/l':  { sub: 'l',  keepPrefix: true  },
+          '/gr': { sub: 'gr', keepPrefix: false },
+          '/p':  { sub: 'p',  keepPrefix: false },
+          '/d':  { sub: 'd',  keepPrefix: false }
+        };
+
+        var prefixes = Object.keys(routes).sort(function (a, b) {
+          return b.length - a.length;
+        });
+
+        for (var i = 0; i < prefixes.length; i++) {
+          var prefix = prefixes[i];
+          var regex = new RegExp('^' + prefix + '(?:\\/(.*))?$');
+          var match = path.match(regex);
+
+          if (match) {
+            var rest = match[1];
+            var route = routes[prefix];
+            var target = 'https://' + route.sub + '.' + baseDomain;
+
+            if (prefix === '/l') {
+              target += (!rest) ? '/l' : '/' + rest;
+            } else {
+              target += (!rest) ? '/' : '/' + rest;
+            }
+
+            target += search + hash;
+            window.location.replace(target);
+            return true;
+          }
+        }
+
+        var starMatch = path.match(/^\/(?:\*|%2A)(?:\/(.*))?$/i);
+        if (starMatch) {
+          var rest = starMatch[1];
+          var target = 'https://l.' + baseDomain + (rest ? '/' + rest : '/');
+          target += search + hash;
+          window.location.replace(target);
+          return true;
+        }
+
+        return false;
+      }
+
+      fetch(DOMAIN_URL, { cache: 'no-store' })
+        .then(function (res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.text();
+        })
+        .then(function (text) {
+          var domain = (text.split(/\r?\n/)[0] || '').trim();
+          if (!domain) {
+            document.body.textContent = '404 Not Found (domain.txt is empty)';
+            return;
+          }
+          if (!doRedirect(domain)) {
+            document.body.textContent = '404 Not Found';
+          }
+        })
+        .catch(function (err) {
+          document.body.textContent = '404 Not Found (failed to load domain.txt: ' + err.message + ')';
+        });
+    })();
+  </script>
+</head>
+<body></body>
+</html>

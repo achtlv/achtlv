@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>achtlv - 个人主页</title>
+
+  <!-- 字体：国内镜像 -->
+  <link href="https://fonts.font.im/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+
+  <!-- Material Icons：国内镜像 -->
+  <link href="https://fonts.font.im/icon?family=Material+Icons" rel="stylesheet"/>
+
+  <!-- Material Color Utilities -->
+  <script src="https://unpkg.com/@material/material-color-utilities@0.4.0/dist/material-color-utilities.min.js"></script>
+
+  <style id="theme-styles"></style>
+
+  <style>
+    body {
+      font-family: 'Roboto', system-ui, sans-serif;
+      min-height: 100dvh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      transition: background 0.5s, color 0.5s;
+      color-scheme: light dark;
+    }
+
+    .card {
+      background: var(--md-sys-color-surface);
+      color: var(--md-sys-color-on-surface);
+      border-radius: 24px;
+      width: 100%;
+      max-width: 380px;
+      overflow: hidden;
+    }
+
+    .profile-header {
+      text-align: center;
+      padding: 32px 20px 24px;
+    }
+
+    .avatar {
+      width: 96px;
+      height: 96px;
+      border-radius: 24px;
+      object-fit: cover;
+      margin-bottom: 16px;
+      transition: transform 0.3s ease;
+    }
+
+    .avatar:hover { transform: scale(1.05); }
+
+    .nickname {
+      font-size: 2rem;
+      font-weight: 400;
+      margin-bottom: 6px;
+    }
+
+    .bio {
+      font-size: 0.95rem;
+      color: var(--md-sys-color-on-surface-variant);
+      line-height: 1.5;
+      max-width: 280px;
+      margin: 0 auto;
+    }
+
+    .links {
+      padding: 0 20px 28px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .link-card {
+      background: var(--md-sys-color-surface-variant);
+      color: var(--md-sys-color-on-surface-variant);
+      border-radius: 20px;
+      padding: 14px 12px;
+      text-align: center;
+      text-decoration: none;
+      transition: background 0.2s ease, color 0.2s ease;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .link-card:hover {
+      background: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+    }
+
+    .link-icon {
+      font-size: 32px !important;
+      margin-bottom: 6px;
+      color: var(--md-sys-color-primary);
+    }
+
+    .link-card:hover .link-icon {
+      color: var(--md-sys-color-on-primary-container);
+    }
+
+    .link-name { 
+      font-size: 1rem; 
+      font-weight: 500; 
+      display: block; 
+      margin-bottom: 2px; 
+    }
+
+    .link-username { 
+      font-size: 0.8rem; 
+      opacity: 0.7; 
+      word-break: break-all; 
+    }
+
+    .copy-toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 24px;
+      font-size: 0.95rem;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+
+    .copy-toast.show {
+      opacity: 1;
+    }
+
+    /* 深色模式：背景黑 + 文字/图标白（自动跟随浏览器主题） */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #000000;
+      }
+      .card {
+        background: #000000;
+        color: #ffffff;
+      }
+      .bio,
+      .nickname {
+        color: #ffffff;
+      }
+      .link-card {
+        background: #1f1f1f;
+        color: #ffffff;
+      }
+      .link-icon {
+        color: #ffffff;
+      }
+      .link-card:hover {
+        background: #333333;
+        color: #ffffff;
+      }
+      .link-card:hover .link-icon {
+        color: #ffffff;
+      }
+      .link-username {
+        opacity: 0.85;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="profile-header">
+      <img src="/c/i.jpg" alt="头像" class="avatar"/>
+      <h1 class="nickname">achtlv</h1>
+      <p class="bio">
+        不敢为天下先
+      </p>
+    </div>
+
+    <div class="links">
+      <!-- 点击复制 -->
+      <div class="link-card" onclick="copyToClipboard('Ganzhou@outlook.sg', '邮箱已复制到剪贴板！')">
+        <span class="material-icons link-icon">mail</span>
+        <span class="link-name">邮箱</span>
+        <span class="link-username">Ganzhou@outlook.sg</span>
+      </div>
+
+      <a href="https://space.bilibili.com/3493271623961083" target="_blank" rel="noopener noreferrer" class="link-card">
+        <span class="material-icons link-icon">play_circle</span>
+        <span class="link-name">Bilibili</span>
+        <span class="link-username">achtlv</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- 复制提示 -->
+  <div id="copyToast" class="copy-toast"></div>
+
+  <script>
+    const { argbFromHex, themeFromSourceColor, applyTheme } = materialColorUtilities;
+    const seedHex = '#1E40AF';  // 企业蓝
+
+    function updateTheme(isDark) {
+      const source = argbFromHex(seedHex);
+      const theme = themeFromSourceColor(source, {
+        variant: 'TONAL_SPOT',
+        contrastLevel: 0.0,
+        isDark: isDark
+      });
+      applyTheme(theme);
+    }
+
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    updateTheme(media.matches);
+    media.addEventListener('change', e => updateTheme(e.matches));
+
+    // 复制函数
+    function copyToClipboard(text, message) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast(message);
+      }).catch(err => {
+        console.error('复制失败:', err);
+        showToast('复制失败，请手动复制');
+      });
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('copyToast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+  </script>
+
+</body>
+</html>
